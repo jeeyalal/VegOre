@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
 import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
@@ -29,6 +30,8 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/subscription" element={<SubscriptionPage />} />
       </Routes>
+
+      <Footer />
     </>
   );
 }
