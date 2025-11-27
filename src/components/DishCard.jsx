@@ -166,14 +166,13 @@
 //   );
 // }
 
-
-
-
 import { useState } from "react";
 import { Info, X, ShoppingCart, Zap } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 export default function DishCard({ dish }) {
   const [open, setOpen] = useState(false);
+  const { addToCart } = useCart(); // ADDED
 
   return (
     <>
@@ -207,11 +206,17 @@ export default function DishCard({ dish }) {
           <p className="text-green-700 font-bold text-lg sm:text-xl mb-3">₹{dish.price}</p>
 
           <div className="flex gap-2">
-            <button className="flex-1 bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 active:scale-95 transition-all flex items-center justify-center gap-1 shadow-sm text-xs sm:text-sm">
+
+            {/* ADD TO CART BUTTON – FIXED */}
+            <button
+              onClick={() => addToCart(dish)}   // ADDED
+              className="flex-1 bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 active:scale-95 transition-all flex items-center justify-center gap-1 shadow-sm text-xs sm:text-sm"
+            >
               <ShoppingCart size={14} />
               <span className="hidden sm:inline">Cart</span>
             </button>
 
+            {/* BUY NOW BUTTON – SAME */}
             <button className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 py-2 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 active:scale-95 transition-all flex items-center justify-center gap-1 shadow-sm text-xs sm:text-sm">
               <Zap size={14} />
               <span className="hidden sm:inline">Buy</span>
@@ -276,15 +281,20 @@ export default function DishCard({ dish }) {
 
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                <button className="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
+
+                {/* ADD TO CART INSIDE MODAL – FIXED */}
+                <button
+                  onClick={() => addToCart(dish)}   // ADDED
+                  className="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                >
                   <ShoppingCart size={20} /> Add to Cart
                 </button>
+
                 <button className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 py-3 rounded-xl font-semibold hover:from-yellow-500 hover:to-yellow-600 transition flex items-center justify-center gap-2">
                   <Zap size={20} /> Buy Now
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       )}
