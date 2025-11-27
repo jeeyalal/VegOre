@@ -1,21 +1,19 @@
-/* Load Okra Regular */
 @font-face {
   font-family: "Okra";
-  src: url("/src/assets/fonts/Okra-Regular.ttf") format("truetype");
-  font-weight: 400;
+  src: url("/fonts/Okra-Regular.ttf") format("truetype");
+  font-weight: normal;
   font-style: normal;
 }
 
-/* Load Okra Bold */
 @font-face {
   font-family: "Okra";
-  src: url("/src/assets/fonts/Okra-Bold.ttf") format("truetype");
-  font-weight: 700;
+  src: url("/fonts/Okra-Bold.ttf") format("truetype");
+  font-weight: bold;
   font-style: normal;
 }
 
 /* Apply Okra everywhere */
-* {
+body {
   font-family: "Okra", sans-serif;
   /* background-color: #f7fff9; */
 }
