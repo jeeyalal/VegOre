@@ -1,0 +1,23 @@
+/* Load Okra Regular */
+@font-face {
+  font-family: "Okra";
+  src: url("/src/assets/fonts/Okra-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Load Okra Bold */
+@font-face {
+  font-family: "Okra";
+  src: url("/src/assets/fonts/Okra-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Apply Okra everywhere */
+* {
+  font-family: "Okra", sans-serif;
+  /* background-color: #f7fff9; */
+}
+
+@import "tailwindcss";
