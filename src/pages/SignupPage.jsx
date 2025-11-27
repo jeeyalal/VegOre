@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Mail, Smartphone, Lock, X } from "lucide-react";
+import { Mail, Smartphone, User, X } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState("");
@@ -16,7 +18,7 @@ export default function LoginPage() {
 
   const handleVerifyOtp = () => {
     if (otp.length === 4) {
-      alert("Logged in successfully!");
+      alert("Signup Successful!");
     } else {
       alert("Invalid OTP");
     }
@@ -25,7 +27,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex justify-center items-center px-4 py-10">
       
-      {/* Login Card */}
+      {/* Signup Card */}
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-md px-8 py-10 border border-green-100">
 
         {/* Logo */}
@@ -34,11 +36,41 @@ export default function LoginPage() {
         </h1>
 
         <p className="text-center text-gray-600 mt-2 text-sm">
-          Login to continue your healthy journey
+          Create your account to get started
         </p>
 
-        {/* Mobile Input */}
+        {/* Name Input */}
         <div className="mt-8">
+          <label className="font-semibold text-gray-700">Full Name</label>
+          <div className="flex items-center mt-2 bg-gray-100 rounded-xl px-4 py-3">
+            <User className="text-green-700" size={20} />
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              className="flex-1 bg-transparent outline-none ml-3"
+            />
+          </div>
+        </div>
+
+        {/* Email Input */}
+        <div className="mt-5">
+          <label className="font-semibold text-gray-700">Email</label>
+          <div className="flex items-center mt-2 bg-gray-100 rounded-xl px-4 py-3">
+            <Mail className="text-green-700" size={20} />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="flex-1 bg-transparent outline-none ml-3"
+            />
+          </div>
+        </div>
+
+        {/* Mobile Input */}
+        <div className="mt-5">
           <label className="font-semibold text-gray-700">Mobile Number</label>
           <div className="flex items-center mt-2 bg-gray-100 rounded-xl px-4 py-3">
             <Smartphone className="text-green-700" size={20} />
@@ -67,20 +99,20 @@ export default function LoginPage() {
           <div className="flex-1 h-[1px] bg-gray-300"></div>
         </div>
 
-        {/* Google Login */}
+        {/* Google Signup */}
         <button className="w-full flex justify-center items-center gap-3 py-3 bg-white border rounded-xl shadow-sm hover:shadow-md transition-all">
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             className="w-6 h-6"
           />
-          <span className="font-medium text-gray-700">Login with Google</span>
+          <span className="font-medium text-gray-700">Signup with Google</span>
         </button>
 
-        {/* Signup Link */}
+        {/* Login Link */}
         <p className="text-center text-gray-600 mt-6 text-sm">
-          Don’t have an account?{" "}
-          <a href="/signup" className="text-green-700 font-semibold underline">
-            Create Account
+          Already have an account?{" "}
+          <a href="/login" className="text-green-700 font-semibold underline">
+            Login
           </a>
         </p>
       </div>
@@ -123,7 +155,7 @@ export default function LoginPage() {
               onClick={handleVerifyOtp}
               className="mt-5 w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all"
             >
-              Verify OTP
+              Verify & Create Account
             </button>
           </div>
         </div>
