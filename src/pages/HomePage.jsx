@@ -24,6 +24,8 @@ export default function HomePage() {
       <DishSection dishes={topMeals} category="normal" type="meals" />
 
       <ReviewSection />
+
+      
     
     </main>
   );

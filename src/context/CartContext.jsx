@@ -1,10 +1,78 @@
-import { createContext, useContext, useState } from "react";
+// import { createContext, useContext, useState } from "react";
+
+// const CartContext = createContext();
+
+// export const CartProvider = ({ children }) => {
+//   const [cart, setCart] = useState([]);
+
+//   const addToCart = (dish) => {
+//     setCart((prev) => {
+//       const exists = prev.find((item) => item.id === dish.id);
+
+//       if (exists) {
+//         return prev.map((item) =>
+//           item.id === dish.id ? { ...item, qty: item.qty + 1 } : item
+//         );
+//       }
+
+//       return [...prev, { ...dish, qty: 1 }];
+//     });
+//   };
+
+//   const removeFromCart = (id) => {
+//     setCart((prev) => prev.filter((item) => item.id !== id));
+//   };
+
+//   const increaseQty = (id) => {
+//     setCart((prev) =>
+//       prev.map((item) =>
+//         item.id === id ? { ...item, qty: item.qty + 1 } : item
+//       )
+//     );
+//   };
+
+//   const decreaseQty = (id) => {
+//     setCart((prev) =>
+//       prev
+//         .map((item) =>
+//           item.id === id ? { ...item, qty: item.qty - 1 } : item
+//         )
+//         .filter((item) => item.qty > 0)
+//     );
+//   };
+
+//   return (
+//     <CartContext.Provider
+//       value={{ cart, addToCart, removeFromCart, increaseQty, decreaseQty }}
+//     >
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+// export const useCart = () => useContext(CartContext);
+
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
-export const CartProvider = ({ children }) => {
+export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
+  // Load from storage
+  useEffect(() => {
+    const saved = localStorage.getItem("vegore-cart");
+    if (saved) {
+      setCart(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save to storage
+  useEffect(() => {
+    localStorage.setItem("vegore-cart", JSON.stringify(cart));
+  }, [cart]);
+
+  // ADD TO CART
   const addToCart = (dish) => {
     setCart((prev) => {
       const exists = prev.find((item) => item.id === dish.id);
@@ -19,10 +87,12 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // REMOVE ITEM
   const removeFromCart = (id) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
+  // INCREASE QTY
   const increaseQty = (id) => {
     setCart((prev) =>
       prev.map((item) =>
@@ -31,6 +101,7 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  // DECREASE QTY
   const decreaseQty = (id) => {
     setCart((prev) =>
       prev
@@ -41,13 +112,23 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  // CLEAR CART (AFTER SUCCESSFUL PAYMENT)
+  const clearCart = () => setCart([]);
+
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, increaseQty, decreaseQty }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        increaseQty,
+        decreaseQty,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>
   );
-};
+}
 
 export const useCart = () => useContext(CartContext);

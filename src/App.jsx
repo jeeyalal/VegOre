@@ -10,10 +10,12 @@ import SubscriptionPage from "./pages/SubscriptionPage";
 import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   return (
     <>
+       <ScrollToTop />
       <NavBar />
 
       <Routes>
