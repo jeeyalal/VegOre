@@ -3,7 +3,6 @@ import Tagline from "../components/Tagline";
 import DishSection from "../components/DishSection";
 import { dishes } from "../data/dishes";
 import ReviewSection from "../components/ReviewSection";
-import Footer from "../components/Footer";
 
 export default function HomePage() {
   const topMeals = [

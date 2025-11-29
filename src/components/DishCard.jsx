@@ -1,7 +1,7 @@
 
 
 // import { useState } from "react";
-// import { Info, X, ShoppingCart, Zap } from "lucide-react";
+// import { Info, X, ShoppingCart, IndianRupee } from "lucide-react";
 // import { useCart } from "../context/CartContext";
 
 // export default function DishCard({ dish }) {
@@ -12,7 +12,7 @@
 //     <>
 //       {/* Dish Card */}
 //       <div className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col">
-        
+
 //         {/* Dish Image */}
 //         <div className="relative overflow-hidden">
 //           <img
@@ -23,7 +23,7 @@
 
 //           {/* Hover Overlay */}
 //           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
 //           {/* Info button - FIXED z-index */}
 //           <button 
 //             onClick={() => setOpen(true)}
@@ -63,7 +63,7 @@
 //                                py-2 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 
 //                                active:scale-95 transition-all flex items-center justify-center 
 //                                gap-1 shadow-sm text-xs sm:text-sm">
-//               <Zap size={14} />
+//               <IndianRupee size={14} />
 //               <span className="hidden sm:inline">Buy</span>
 //             </button>
 //           </div>
@@ -104,7 +104,7 @@
 
 //             {/* Modal Content */}
 //             <div className="p-5 sm:p-6">
-              
+
 //               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">
 //                 {dish.name}
 //               </h2>
@@ -142,7 +142,7 @@
 //                 <button className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 
 //                                    py-3 rounded-xl font-semibold hover:from-yellow-500 hover:to-yellow-600 
 //                                    transition flex items-center justify-center gap-2">
-//                   <Zap size={20} /> Buy Now
+//                   <IndianRupee size={20} /> Buy Now
 //                 </button>
 //               </div>
 //             </div>
@@ -180,7 +180,7 @@
 
 
 import { useState } from "react";
-import { Info, X, ShoppingCart, Zap } from "lucide-react";
+import { Info, X, ShoppingCart, IndianRupee } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { initiatePayment } from "../utils/payments"; // ✅ ADDED
 
@@ -192,7 +192,7 @@ export default function DishCard({ dish }) {
     <>
       {/* Dish Card */}
       <div className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col">
-        
+
         {/* Dish Image */}
         <div className="relative overflow-hidden">
           <img
@@ -203,9 +203,9 @@ export default function DishCard({ dish }) {
 
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Info button */}
-          <button 
+          <button
             onClick={() => setOpen(true)}
             className="absolute top-2 right-2 p-2 rounded-full bg-white/90 backdrop-blur-sm 
                        hover:bg-green-600 hover:text-white shadow-lg transition-all duration-300 
@@ -240,13 +240,13 @@ export default function DishCard({ dish }) {
 
             {/* BUY NOW — Razorpay */}
             <button
-              onClick={() => initiatePayment(dish.price)}   
+              onClick={() => initiatePayment(dish.price)}
               className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 
                          py-2 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-600 
                          active:scale-95 transition-all flex items-center justify-center 
                          gap-1 shadow-sm text-xs sm:text-sm"
             >
-              <Zap size={14} />
+              <IndianRupee size={14} />
               <span className="hidden sm:inline">Buy</span>
             </button>
           </div>
@@ -255,18 +255,18 @@ export default function DishCard({ dish }) {
 
       {/* FULLSCREEN MODAL */}
       {open && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center 
                      z-[1000] p-4 animate-fadeIn"
           onClick={() => setOpen(false)}
         >
-          <div 
+          <div
             className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-2xl relative 
                        animate-slideUp max-h-[90vh] overflow-y-auto z-[1001]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
-            <button 
+            <button
               onClick={() => setOpen(false)}
               className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-lg 
                          hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90 
@@ -287,7 +287,7 @@ export default function DishCard({ dish }) {
 
             {/* Modal Content */}
             <div className="p-5 sm:p-6">
-              
+
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">
                 {dish.name}
               </h2>
@@ -325,12 +325,12 @@ export default function DishCard({ dish }) {
 
                 {/* BUY NOW — Razorpay */}
                 <button
-                  onClick={() => initiatePayment(dish.price)}  
+                  onClick={() => initiatePayment(dish.price)}
                   className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 
                              py-3 rounded-xl font-semibold hover:from-yellow-500 hover:to-yellow-600 
                              transition flex items-center justify-center gap-2"
                 >
-                  <Zap size={20} /> Buy Now
+                  <IndianRupee size={20} /> Buy Now
                 </button>
               </div>
             </div>
