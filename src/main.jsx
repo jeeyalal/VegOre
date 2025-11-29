@@ -4,11 +4,15 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from "./context/CartContext.jsx";
+import { SubscriptionProvider } from './context/SubscriptionContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <CartProvider>
+      <SubscriptionProvider>
       <App />
+      
+</SubscriptionProvider>
     </CartProvider>
   </BrowserRouter>,
 )
