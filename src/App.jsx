@@ -154,6 +154,105 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { Routes, Route } from "react-router-dom";
+// import NavBar from "./components/NavBar";
+// import Footer from "./components/Footer";
+// import ScrollToTop from "./components/ScrollToTop";
+
+// import HomePage from "./pages/HomePage";
+// import MenuPage from "./pages/MenuPage";
+// import BlogsPage from "./pages/blogs/BlogsPage";
+// import BlogDetails from "./pages/blogs/BlogDetails";
+// import ContactPage from "./pages/ContactPage";
+// import AboutPage from "./pages/AboutPage";
+// import LoginPage from "./pages/LoginPage";
+// import SignupPage from "./pages/SignupPage";
+// import CartPage from "./pages/CartPage";
+
+// // ⬇️ NEW: import from index.js
+// import {
+//   PlanSelection,
+//   CustomizeSubscription,
+//   MenuPreview,
+// } from "./pages/Subscription";
+
+// import AdminApp from "./admin/AdminApp";
+
+// export default function App() {
+//   return (
+//     <>
+//       <ScrollToTop />
+
+//       <Routes>
+//         {/* ADMIN ROUTES */}
+//         <Route path="/admin/*" element={<AdminApp />} />
+
+//         {/* CLIENT ROUTES */}
+//         <Route
+//           path="/*"
+//           element={
+//             <>
+//               <NavBar />
+
+//               <Routes>
+//                 <Route path="/" element={<HomePage />} />
+//                 <Route path="/menu" element={<MenuPage />} />
+//                 <Route path="/blogs" element={<BlogsPage />} />
+//                 <Route path="/blogs/:slug" element={<BlogDetails />} />
+//                 <Route path="/contact" element={<ContactPage />} />
+//                 <Route path="/about" element={<AboutPage />} />
+//                 <Route path="/login" element={<LoginPage />} />
+//                 <Route path="/signup" element={<SignupPage />} />
+//                 <Route path="/cart" element={<CartPage />} />
+
+//                 {/* SUBSCRIPTION ROUTES */}
+//                 <Route path="/subscription" element={<PlanSelection />} />
+//                 <Route path="/subscription/customize" element={<CustomizeSubscription />} />
+//                 <Route path="/subscription/preview" element={<MenuPreview />} />
+//               </Routes>
+
+//               <Footer />
+//             </>
+//           }
+//         />
+//       </Routes>
+//     </>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
@@ -169,13 +268,18 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
 
-// ⬇️ NEW: import from index.js
+// New Subscription Flow
 import {
-  PlanSelection,
+  ChoosePlan,
   CustomizeSubscription,
   MenuPreview,
+  UserDetails,
+  Checkout,
+  Payment,
+  SubscriptionSuccess,
 } from "./pages/Subscription";
 
+// Admin
 import AdminApp from "./admin/AdminApp";
 
 export default function App() {
@@ -184,16 +288,15 @@ export default function App() {
       <ScrollToTop />
 
       <Routes>
-        {/* ADMIN ROUTES */}
+        {/* ADMIN ROUTES (NO NAVBAR & FOOTER) */}
         <Route path="/admin/*" element={<AdminApp />} />
 
-        {/* CLIENT ROUTES */}
+        {/* CLIENT WEBSITE ROUTES */}
         <Route
           path="/*"
           element={
             <>
               <NavBar />
-
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/menu" element={<MenuPage />} />
@@ -205,12 +308,15 @@ export default function App() {
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/cart" element={<CartPage />} />
 
-                {/* SUBSCRIPTION ROUTES */}
-                <Route path="/subscription" element={<PlanSelection />} />
+                {/* NEW SUBSCRIPTION FLOW */}
+                <Route path="/subscription" element={<ChoosePlan />} />
                 <Route path="/subscription/customize" element={<CustomizeSubscription />} />
-                <Route path="/subscription/preview" element={<MenuPreview />} />
+                <Route path="/subscription/menu-preview" element={<MenuPreview />} />
+                <Route path="/subscription/user-details" element={<UserDetails />} />
+                <Route path="/subscription/checkout" element={<Checkout />} />
+                <Route path="/subscription/payment" element={<Payment />} />
+                <Route path="/subscription/success" element={<SubscriptionSuccess />} />
               </Routes>
-
               <Footer />
             </>
           }
@@ -219,4 +325,3 @@ export default function App() {
     </>
   );
 }
-
