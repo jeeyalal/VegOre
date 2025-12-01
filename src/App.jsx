@@ -267,7 +267,7 @@ import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
-
+import Dashboard from "./pages/Dashboard";
 // New Subscription Flow
 import {
   ChoosePlan,
@@ -316,6 +316,9 @@ export default function App() {
                 <Route path="/subscription/checkout" element={<Checkout />} />
                 <Route path="/subscription/payment" element={<Payment />} />
                 <Route path="/subscription/success" element={<SubscriptionSuccess />} />
+
+                {/* dashboard */}
+                 <Route path="/dashboard" element={<Dashboard />} />
               </Routes>
               <Footer />
             </>

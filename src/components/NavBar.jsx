@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { FiMenu, FiX, FiShoppingCart } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -9,7 +7,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(false);
 
   const { cart } = useCart(); // ✅ Step 4 requirement added
-  const cartCount = cart.length; 
+  const cartCount = cart.length;
 
   const closeMenu = () => setOpen(false);
 
@@ -19,6 +17,7 @@ export default function NavBar() {
     { name: "Contact", path: "/contact" },
     { name: "About Us", path: "/about" },
     { name: "Login", path: "/login" },
+    { name: "Dashboard", path: "/dashboard" },
   ];
 
   return (
@@ -37,7 +36,7 @@ export default function NavBar() {
 
             <Link to="/cart" className="relative text-2xl text-gray-700 hover:text-green-700 transition">
               <FiShoppingCart />
-              
+
               {/* CART COUNT BADGE */}
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
@@ -46,7 +45,7 @@ export default function NavBar() {
               )}
             </Link>
 
-            <button 
+            <button
               onClick={() => setOpen(true)}
               className="text-3xl text-gray-700 hover:text-green-700 transition"
             >
@@ -74,10 +73,17 @@ export default function NavBar() {
               Subscription
             </Link>
 
+            {/* DASHBOARD BUTTON — NEW */}
+            <Link
+              to="/dashboard"
+              className="px-5 py-2.5 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-blue-700 transition shadow-sm"
+            >
+              Dashboard
+            </Link>
             {/* DESKTOP CART ICON */}
             <Link to="/cart" className="relative text-2xl text-gray-700 hover:text-green-700 transition">
               <FiShoppingCart />
-              
+
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
                   {cartCount}
@@ -99,7 +105,7 @@ export default function NavBar() {
 
             {/* TOP BAR */}
             <div className="px-4 py-4 flex justify-between items-center border-b bg-white">
-              
+
               <Link to="/" className="text-2xl font-bold text-green-700" onClick={closeMenu}>
                 VegOre
               </Link>
@@ -107,13 +113,13 @@ export default function NavBar() {
               <div className="flex items-center gap-5">
 
                 {/* MOBILE CART */}
-                <Link 
+                <Link
                   to="/cart"
                   className="relative text-2xl text-gray-700 hover:text-green-700 transition"
                   onClick={closeMenu}
                 >
                   <FiShoppingCart />
-                  
+
                   {cartCount > 0 && (
                     <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
                       {cartCount}
@@ -129,7 +135,7 @@ export default function NavBar() {
 
             {/* NAV LINKS */}
             <nav className="flex-1 px-4 py-6 flex flex-col gap-4 overflow-y-auto">
-              
+
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -150,6 +156,14 @@ export default function NavBar() {
                 className="mt-2 px-4 py-3 bg-green-600 text-white text-lg font-medium text-center rounded-lg shadow-md hover:bg-green-700 transition"
               >
                 Subscription
+              </Link>
+              {/* DASHBOARD BTN — NEW */}
+              <Link
+                to="/dashboard"
+                onClick={closeMenu}
+                className="mt-2 px-4 py-3 bg-green-600 text-white text-lg font-medium text-center rounded-lg shadow-md hover:bg-blue-700 transition"
+              >
+                Dashboard
               </Link>
 
             </nav>
