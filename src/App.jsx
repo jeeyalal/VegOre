@@ -268,6 +268,12 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
 import Dashboard from "./pages/Dashboard";
+
+// support 
+import FAQ from './pages/FAQ';
+import RefundPolicy from './pages/RefundPolicy';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
 // New Subscription Flow
 import {
   ChoosePlan,
@@ -319,6 +325,12 @@ export default function App() {
 
                 {/* dashboard */}
                  <Route path="/dashboard" element={<Dashboard />} />
+
+                 {/* support */}
+                 <Route path="/faq" element={<FAQ />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
               </Routes>
               <Footer />
             </>
