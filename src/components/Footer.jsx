@@ -120,14 +120,14 @@ export default function Footer() {
           {/* Social Icons */}
           <div className="flex gap-4 mt-4">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/vegore.official?igsh=cGhoeDR0M2QxcDM5"
               target="_blank"
               className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition"
             >
               <Instagram size={20} />
             </a>
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/share/1GgtRZtPEG/"
               target="_blank"
               className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition"
             >
@@ -171,10 +171,10 @@ export default function Footer() {
 
           <ul className="space-y-2 text-sm text-gray-200">
             <li className="flex items-center gap-2">
-              <Phone size={18} /> +91 98765 43210
+              <Phone size={18} /> +91 72494 91979
             </li>
             <li className="flex items-center gap-2">
-              <Mail size={18} /> support@vegore.me
+              <Mail size={18} /> vegoreofficial@gmail.com
             </li>
             <li className="flex items-center gap-2">
               <MapPin size={18} /> Mumbai, India
