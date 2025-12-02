@@ -1,30 +1,55 @@
 import { useState } from "react";
-import { Mail, Smartphone, Lock, X } from "lucide-react";
+import { Smartphone, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [mobile, setMobile] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState("");
+  const { sendOtp, verifyOtp, googleLogin } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (mobile.length === 10) {
-      setShowOTP(true);
+      try {
+        await sendOtp(mobile);
+        setShowOTP(true);
+        alert("OTP sent to console (Mock Mode)");
+      } catch (error) {
+        alert("Failed to send OTP");
+      }
     } else {
       alert("Please enter a valid 10-digit mobile number");
     }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     if (otp.length === 4) {
-      alert("Logged in successfully!");
+      try {
+        await verifyOtp(mobile, otp);
+        navigate("/");
+      } catch (error) {
+        alert("Invalid OTP");
+      }
     } else {
-      alert("Invalid OTP");
+      alert("Invalid OTP length");
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse.credential);
+      navigate("/");
+    } catch (error) {
+      alert("Google Login failed");
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex justify-center items-center px-4 ">
-      
+
       {/* Login Card */}
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-md px-8 py-10 border border-green-100">
 
@@ -52,7 +77,7 @@ export default function LoginPage() {
             />
           </div>
 
-          <button 
+          <button
             onClick={handleSendOtp}
             className="mt-5 w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all"
           >
@@ -68,28 +93,16 @@ export default function LoginPage() {
         </div>
 
         {/* Google Login */}
-        <button className="w-full flex justify-center items-center gap-3 py-3 bg-white border rounded-xl shadow-sm hover:shadow-md transition-all">
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            className="w-6 h-6"
-          />
-          <span className="font-medium text-gray-700">Login with Google</span>
-        </button>
-
-        {/* Signup Link */}
-        <p className="text-center text-gray-600 mt-6 text-sm">
-          Don’t have an account?{" "}
-          <a href="/signup" className="text-green-700 font-semibold underline">
-            Create Account
-          </a>
-        </p>
+        <div className="flex justify-center">
+          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => alert("Login Failed")} />
+        </div>
       </div>
 
       {/* OTP Modal */}
       {showOTP && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center p-4 z-50">
           <div className="bg-white rounded-xl w-full max-w-sm p-6 relative shadow-lg">
-            
+
             {/* Close */}
             <button
               className="absolute top-3 right-3 text-gray-600 hover:text-red-500"

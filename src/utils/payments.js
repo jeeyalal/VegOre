@@ -1,13 +1,25 @@
-export const initiatePayment = async (amount) => {
-  try {
-    // Create order from backend
-    const res = await fetch("http://localhost:5000/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount }),
-    });
+import api from "../api/axios";
 
-    const data = await res.json();
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+export const initiatePayment = async (amount, userDetails = {}, onSuccess) => {
+  try {
+    const isLoaded = await loadRazorpay();
+    if (!isLoaded) {
+      alert("Razorpay SDK failed to load. Please check your internet connection or disable ad blockers.");
+      return;
+    }
+
+    // Create order from backend
+    const { data } = await api.post("/payments/create-order", { amount });
 
     if (!data.success) {
       alert("Error creating order");
@@ -23,17 +35,34 @@ export const initiatePayment = async (amount) => {
       order_id: data.order.id,
       theme: { color: "#16a34a" },
 
-      handler: function (response) {
-        alert("Payment Successful!");
-        console.log(response);
+      handler: async function (response) {
+        try {
+          const verifyRes = await api.post("/payments/verify", {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            orderData: {
+              amount,
+              ...userDetails,
+            },
+          });
 
-        // TODO: Clear cart and redirect
+          if (verifyRes.data.success) {
+            alert("Payment Successful!");
+            if (onSuccess) onSuccess(verifyRes.data);
+          } else {
+            alert("Payment verification failed");
+          }
+        } catch (error) {
+          console.error("Verification Error:", error);
+          alert("Payment verification failed");
+        }
       },
 
       prefill: {
-        name: "User",
-        email: "test@example.com",
-        contact: "9999999999",
+        name: userDetails.name || "User",
+        email: userDetails.email || "test@example.com",
+        contact: userDetails.phone || "9999999999",
       },
     };
 
@@ -42,5 +71,6 @@ export const initiatePayment = async (amount) => {
 
   } catch (error) {
     console.error("Payment Error:", error);
+    alert("Something went wrong while initiating payment. Ensure you are logged in.");
   }
 };

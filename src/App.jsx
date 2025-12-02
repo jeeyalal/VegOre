@@ -15,7 +15,7 @@
 
 // // import {
 // //   PlanSelection,
-  
+
 // //   DeliveryDetails,
 // //   MealPreferences,
 // //   SummaryPayment,
@@ -265,14 +265,13 @@ import BlogDetails from "./pages/blogs/BlogDetails";
 import ContactPage from "./pages/ContactPage";
 import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
 import Dashboard from "./pages/Dashboard";
 
 // support 
 import FAQ from './pages/FAQ';
 import RefundPolicy from './pages/RefundPolicy';
-import PrivacyPolicy from './pages/PrivacyPolicy';
+import AppPrivacy from './pages/AppPrivacy';
 import TermsConditions from './pages/TermsConditions';
 // New Subscription Flow
 import {
@@ -311,7 +310,6 @@ export default function App() {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
                 <Route path="/cart" element={<CartPage />} />
 
                 {/* NEW SUBSCRIPTION FLOW */}
@@ -324,13 +322,13 @@ export default function App() {
                 <Route path="/subscription/success" element={<SubscriptionSuccess />} />
 
                 {/* dashboard */}
-                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                 {/* support */}
-                 <Route path="/faq" element={<FAQ />} />
-        <Route path="/refund-policy" element={<RefundPolicy />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-conditions" element={<TermsConditions />} />
+                {/* support */}
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/privacy-policy" element={<AppPrivacy />} />
+                <Route path="/terms-conditions" element={<TermsConditions />} />
               </Routes>
               <Footer />
             </>
