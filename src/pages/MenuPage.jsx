@@ -3,7 +3,7 @@ import { dishes } from "../data/dishes";
 import CategoryTabs from "../components/CategoryTabs";
 import FoodTypeTabs from "../components/FoodTypeTabs";
 import DishCard from "../components/DishCard";
-
+import BackButton from "../components/BackButton";
 export default function MenuPage() {
   const [category, setCategory] = useState("normal");
   const [foodType, setFoodType] = useState("meals");
@@ -12,7 +12,7 @@ export default function MenuPage() {
 
   return (
     <main className="pt-5 px-4">
-
+      <BackButton />
       <CategoryTabs selected={category} setSelected={setCategory} />
       <FoodTypeTabs foodType={foodType} setFoodType={setFoodType} />
 

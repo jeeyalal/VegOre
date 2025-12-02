@@ -59,7 +59,7 @@
 import { useCart } from "../context/CartContext";
 import { Trash, Plus, Minus } from "lucide-react";
 import { initiatePayment } from "../utils/payments"; // ⭐ Razorpay Checkout
-
+import BackButton from "../components/BackButton";
 export default function CartPage() {
   const { cart, removeFromCart, increaseQty, decreaseQty } = useCart();
 
@@ -67,7 +67,8 @@ export default function CartPage() {
 
   return (
     <div className="px-4 max-w-4xl mx-auto mt-8 mb-16">
-      <h1 className="text-3xl font-bold text-green-700 mb-6">Your Cart</h1>
+      <BackButton />
+      <h1 className="text-3xl font-bold mt-4 text-green-700 mb-6">Your Cart</h1>
 
       {/* EMPTY CART */}
       {cart.length === 0 ? (

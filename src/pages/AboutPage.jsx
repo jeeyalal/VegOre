@@ -1,9 +1,15 @@
+import BackButton from "../components/BackButton";
+
 export default function AboutPage() {
   return (
     <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen pt-7 pb-16">
+      <div className="max-w-5xl mx-auto px-4">
+        <BackButton />
+      </div>
       
       {/* HEADER */}
       <div className="max-w-5xl mx-auto px-4 text-center mt-10">
+        
         <h1 className="text-4xl sm:text-5xl font-extrabold text-green-700 leading-snug">
           About <span className="text-emerald-600">VegOre</span>
         </h1>

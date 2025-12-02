@@ -1,11 +1,11 @@
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
-
+import BackButton from "../components/BackButton";
 export default function ContactPage() {
   return (
-    <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen py-16 px-4">
-      
+    <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen py-10 px-4">
+      <BackButton />
       {/* Page Title */}
-      <div className="text-center mb-12">
+      <div className="text-center mt-2 mb-12">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-green-700">
           Contact <span className="text-emerald-600">Us</span>
         </h1>
