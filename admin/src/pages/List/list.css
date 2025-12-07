@@ -1,0 +1,125 @@
+.list-page {
+  padding: 25px;
+  background: #ecfdf5;
+  min-height: 100vh;
+}
+
+/* ✅ Page Title */
+.list-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: #15803d;
+  margin-bottom: 25px;
+}
+
+/* ✅ Grid Layout */
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* ✅ Card */
+.food-card {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transition: 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.food-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ✅ Image */
+.food-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+/* ✅ Content */
+.food-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.food-content h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.food-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* ✅ Meta */
+.food-meta {
+  display: flex;
+  gap: 10px;
+}
+
+.food-meta span {
+  background: #d1fae5;
+  color: #15803d;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* ✅ Nutrition */
+.food-nutrition {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* ✅ Ingredients */
+.food-ingredients {
+  font-size: 12px;
+  color: #333;
+}
+
+/* ✅ Actions */
+.food-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 600px) {
+  .food-img {
+    height: 140px;
+  }
+
+  .food-content h3 {
+    font-size: 16px;
+  }
+}

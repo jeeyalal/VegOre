@@ -1,0 +1,77 @@
+.add {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 10px;
+  background: #ecfdf5;
+}
+
+.add-form {
+  width: 100%;
+  max-width: 450px;
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-form h2 {
+  text-align: center;
+  color: #15803d;
+  margin-bottom: 10px;
+}
+
+.add-form input,
+.add-form select,
+.add-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+  outline: none;
+  font-size: 14px;
+}
+
+.add-form textarea {
+  min-height: 80px;
+  resize: none;
+}
+
+.add-form button {
+  background: #15803d;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-form button:hover {
+  background: #16a34a;
+}
+
+/* ✅ Nutrition Grid */
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 600px) {
+  .add-form {
+    padding: 18px;
+  }
+
+  .nutrition-grid {
+    grid-template-columns: 1fr;
+  }
+}
