@@ -2,9 +2,13 @@ import foodModel from "../models/foodModel.js";
 import fs from "fs";
 import path from "path";
 
-// ✅ Add Food
+// ✅ ✅ ✅ ADD FOOD
 const addFood = async (req, res) => {
   try {
+    console.log("REQ.FILE =>", req.file);
+    console.log("REQ.BODY =>", req.body);
+
+    // ✅ Safety check
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -15,7 +19,10 @@ const addFood = async (req, res) => {
     const food = new foodModel({
       id: req.body.id,
       name: req.body.name,
-      img: req.file.filename,
+
+      // ✅ IMAGE FIELD MUST MATCH FRONTEND (`image`)
+      image: req.file.filename,
+
       price: req.body.price,
 
       nutrition: {
@@ -46,31 +53,26 @@ const addFood = async (req, res) => {
   }
 };
 
-// ✅ Get All Food
+
+// ✅ ✅ ✅ LIST FOOD
 const listFood = async (req, res) => {
   try {
     const foods = await foodModel.find({});
     res.json({ success: true, data: foods });
   } catch (error) {
     console.log("LIST FOOD ERROR:", error);
-    res.status(500).json({ success: false, message: "error" });
+    res.json({ success: false, message: "Failed to fetch food" });
   }
 };
 
-// ✅ Remove Food (FIXED)
+
+// ✅ ✅ ✅ REMOVE FOOD (FINAL FIXED VERSION)
 const removeFood = async (req, res) => {
   try {
-    const { id } = req.body; // ✅ correct
+    const { id } = req.body;
 
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "Food ID is required",
-      });
-    }
-
-    // ✅ Find by YOUR custom id field
-    const food = await foodModel.findOne({ id });
+    // ✅ Find using MongoDB _id
+    const food = await foodModel.findById(id);
 
     if (!food) {
       return res.status(404).json({
@@ -80,14 +82,14 @@ const removeFood = async (req, res) => {
     }
 
     // ✅ Delete image from uploads folder
-    const imagePath = path.join("uploads", food.img);
+    const imagePath = path.join("uploads", food.image);
 
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
+    fs.unlink(imagePath, (err) => {
+      if (err) console.log("Image delete error:", err);
+    });
 
     // ✅ Delete from database
-    await foodModel.deleteOne({ id });
+    await foodModel.findByIdAndDelete(id);
 
     res.json({
       success: true,
@@ -97,7 +99,7 @@ const removeFood = async (req, res) => {
     console.log("REMOVE FOOD ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "error",
+      message: "Delete failed",
     });
   }
 };
