@@ -1,11 +1,13 @@
+
+
+
+
 // import React, { useEffect, useState } from "react";
 // import "./add.css";
 // import axios from "axios";
 // import { toast } from "react-toastify";
 
-// const Add = ({url}) => {
-  
-
+// const Add = ({ url }) => {
 //   const [image, setImage] = useState(null);
 
 //   const [data, setData] = useState({
@@ -29,7 +31,7 @@
 //   const onSubmitHandler = async (e) => {
 //     e.preventDefault();
 
-//     // ✅ Frontend validation with TOAST
+//     // ✅ Frontend validation
 //     if (
 //       !data.id ||
 //       !data.name ||
@@ -65,9 +67,19 @@
 //       formData.append("category", data.category);
 //       formData.append("image", image);
 
+//       // ✅ ✅ ✅ GET ADMIN TOKEN
+//       const token = localStorage.getItem("adminToken");
+
+//       // ✅ ✅ ✅ SEND TOKEN IN HEADERS
 //       const response = await axios.post(
 //         `${url}/api/food/add`,
-//         formData
+//         formData,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "multipart/form-data",
+//           },
+//         }
 //       );
 
 //       if (response.data.success) {
@@ -106,7 +118,6 @@
 //       <form className="add-form" onSubmit={onSubmitHandler}>
 //         <h2>Add New Dish</h2>
 
-//         {/* ✅ ID */}
 //         <input
 //           type="number"
 //           name="id"
@@ -116,15 +127,23 @@
 //           onChange={onChangeHandler}
 //         />
 
-//         {/* ✅ Section */}
-//         <select name="section" required value={data.section} onChange={onChangeHandler}>
+//         <select
+//           name="section"
+//           required
+//           value={data.section}
+//           onChange={onChangeHandler}
+//         >
 //           <option value="normal">Normal</option>
 //           <option value="vegan">Vegan</option>
 //           <option value="jain">Jain</option>
 //         </select>
 
-//         {/* ✅ Category */}
-//         <select name="category" required value={data.category} onChange={onChangeHandler}>
+//         <select
+//           name="category"
+//           required
+//           value={data.category}
+//           onChange={onChangeHandler}
+//         >
 //           <option value="meals">Meals</option>
 //           <option value="salads">Salads</option>
 //           <option value="smoothies">Smoothies</option>
@@ -148,7 +167,6 @@
 //           onChange={onChangeHandler}
 //         />
 
-//         {/* ✅ Nutrition */}
 //         <div className="nutrition-grid">
 //           <input
 //             type="number"
@@ -184,7 +202,6 @@
 //           />
 //         </div>
 
-//         {/* ✅ Ingredients */}
 //         <textarea
 //           name="ingredients"
 //           placeholder="Ingredients (comma separated)"
@@ -193,7 +210,6 @@
 //           onChange={onChangeHandler}
 //         />
 
-//         {/* ✅ Image */}
 //         <input
 //           type="file"
 //           required
@@ -207,8 +223,6 @@
 // };
 
 // export default Add;
-
-
 
 
 import React, { useEffect, useState } from "react";
@@ -279,20 +293,28 @@ const Add = ({ url }) => {
       // ✅ ✅ ✅ GET ADMIN TOKEN
       const token = localStorage.getItem("adminToken");
 
-      // ✅ ✅ ✅ SEND TOKEN IN HEADERS
+      if (!token) {
+        toast.error("Admin not logged in!");
+        return;
+      }
+
+      // ✅ ✅ ✅ SEND TOKEN IN ALL POSSIBLE FORMATS
       const response = await axios.post(
         `${url}/api/food/add`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            token: token,
+            "admin-token": token,
+            "x-auth-token": token,
             "Content-Type": "multipart/form-data",
           },
         }
       );
 
       if (response.data.success) {
-        toast.success("Dish added successfully!");
+        toast.success("✅ Dish added successfully!");
 
         // ✅ Reset form
         setData({
@@ -310,11 +332,11 @@ const Add = ({ url }) => {
 
         setImage(null);
       } else {
-        toast.error("Failed to add dish");
+        toast.error("❌ Failed to add dish");
       }
     } catch (error) {
       console.log("ADD FOOD FRONTEND ERROR:", error);
-      toast.error("Server error! Please try again.");
+      toast.error("❌ Server error! Please try again.");
     }
   };
 
