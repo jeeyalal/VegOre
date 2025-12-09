@@ -1,33 +1,82 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+// import { StrictMode } from 'react'
+// import { createRoot } from 'react-dom/client'
+// import './index.css'
+// import App from './App.jsx'
+// import { BrowserRouter } from "react-router-dom";
+// import { CartProvider } from "./context/CartContext.jsx";
+// import { SubscriptionProvider } from './context/SubscriptionContext.jsx';
+// import FoodProvider from "./context/FoodContext";   // ✅ IMPORTANT
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// createRoot(document.getElementById('root')).render(
+//   <StrictMode>
+//     <BrowserRouter>
+
+//       ✅ {/* FOOD PROVIDER MUST WRAP EVERYTHING */}
+//       <FoodProvider>
+
+//         <CartProvider>
+//           <SubscriptionProvider>
+
+//             <App />
+
+//             <ToastContainer
+//               position="top-right"
+//               theme="colored"
+//               autoClose={2000}
+//               pauseOnHover={false}
+//               newestOnTop={true}
+//             />
+
+//           </SubscriptionProvider>
+//         </CartProvider>
+
+//       </FoodProvider>
+
+//     </BrowserRouter>
+//   </StrictMode>
+// );
+
+
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from "./context/CartContext.jsx";
-import { SubscriptionProvider } from './context/SubscriptionContext.jsx';
-
+import { SubscriptionProvider } from "./context/SubscriptionContext.jsx";
+import FoodProvider from "./context/FoodContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-createRoot(document.getElementById('root')).render(
+// ✅ GOOGLE AUTH PROVIDER
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <CartProvider>
-        <SubscriptionProvider>
+      <GoogleOAuthProvider clientId="321795542746-n8pe2jbbq9l9pbv1ot6q5pph5ukgaief.apps.googleusercontent.com">
 
-          <App />
+        <FoodProvider>
+          <CartProvider>
+            <SubscriptionProvider>
 
-          {/* 🔥 Toasts now appear in top-right */}
-          <ToastContainer
-            position="top-right"
-            theme="colored"
-            autoClose={2000}
-            pauseOnHover={false}
-            newestOnTop={true}
-          />
+              <App />
 
-        </SubscriptionProvider>
-      </CartProvider>
+              <ToastContainer
+                position="top-right"
+                theme="colored"
+                autoClose={2000}
+                pauseOnHover={false}
+                newestOnTop={true}
+              />
+
+            </SubscriptionProvider>
+          </CartProvider>
+        </FoodProvider>
+
+      </GoogleOAuthProvider>
     </BrowserRouter>
   </StrictMode>
-)
+);
