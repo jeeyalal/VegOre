@@ -177,29 +177,134 @@
 // export { addFood, listFood, removeFood };
 
 
+// import foodModel from "../models/foodModel.js";
+// import cloudinary from "../config/cloudinary.js";
+
+// // ✅ ADD FOOD (CLOUDINARY)
+// const addFood = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Image is required",
+//       });
+//     }
+
+//     // ✅ Upload image to Cloudinary
+//     const result = await cloudinary.uploader.upload(
+//       `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+//       { folder: "vegore" }
+//     );
+
+//     const food = new foodModel({
+//       id: req.body.id,
+//       name: req.body.name,
+//       img: result.secure_url, // ✅ CLOUDINARY URL
+//       price: req.body.price,
+
+//       nutrition: {
+//         calories: req.body.calories,
+//         protein: req.body.protein,
+//         carbs: req.body.carbs,
+//         fat: req.body.fat,
+//       },
+
+//       ingredients: JSON.parse(req.body.ingredients),
+//       section: req.body.section,
+//       category: req.body.category,
+//     });
+
+//     await food.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "✅ Food added successfully",
+//       food,
+//     });
+//   } catch (error) {
+//     console.error("ADD FOOD ERROR:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Add food failed",
+//     });
+//   }
+// };
+
+// // ✅ LIST FOOD
+// const listFood = async (req, res) => {
+//   try {
+//     const foods = await foodModel.find({});
+//     res.json({ success: true, data: foods });
+//   } catch (error) {
+//     console.error("LIST FOOD ERROR:", error);
+//     res.status(500).json({ success: false, message: "Fetch failed" });
+//   }
+// };
+
+// // ✅ REMOVE FOOD
+// const removeFood = async (req, res) => {
+//   try {
+//     const { id } = req.body;
+
+//     const food = await foodModel.findById(id);
+//     if (!food) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Food not found",
+//       });
+//     }
+
+//     // ✅ Delete DB record (Cloudinary auto keeps image unless you want to delete it)
+//     await foodModel.findByIdAndDelete(id);
+
+//     res.json({
+//       success: true,
+//       message: "✅ Food deleted successfully",
+//     });
+//   } catch (error) {
+//     console.error("DELETE FOOD ERROR:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Delete failed",
+//     });
+//   }
+// };
+
+// export { addFood, listFood, removeFood };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import foodModel from "../models/foodModel.js";
-import cloudinary from "../config/cloudinary.js";
 
 // ✅ ADD FOOD (CLOUDINARY)
 const addFood = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "Image is required",
-      });
+      return res.status(400).json({ success: false, message: "Image is required" });
     }
-
-    // ✅ Upload image to Cloudinary
-    const result = await cloudinary.uploader.upload(
-      `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-      { folder: "vegore" }
-    );
 
     const food = new foodModel({
       id: req.body.id,
       name: req.body.name,
-      img: result.secure_url, // ✅ CLOUDINARY URL
+      img: req.file.path, // ✅ CLOUDINARY FULL URL
       price: req.body.price,
 
       nutrition: {
@@ -241,20 +346,16 @@ const listFood = async (req, res) => {
   }
 };
 
-// ✅ REMOVE FOOD
+// ✅ REMOVE FOOD (DB ONLY)
 const removeFood = async (req, res) => {
   try {
     const { id } = req.body;
 
     const food = await foodModel.findById(id);
     if (!food) {
-      return res.status(404).json({
-        success: false,
-        message: "Food not found",
-      });
+      return res.status(404).json({ success: false, message: "Food not found" });
     }
 
-    // ✅ Delete DB record (Cloudinary auto keeps image unless you want to delete it)
     await foodModel.findByIdAndDelete(id);
 
     res.json({

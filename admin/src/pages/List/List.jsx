@@ -58,10 +58,10 @@ const List = ({ url }) => {
       <div className="food-grid">
         {list.map((item) => (
           <div className="food-card" key={item._id}>
-            
+
             {/* ✅✅✅ FINAL CORRECT IMAGE URL */}
             <img
-              src={`${url}/uploads/${item.img}`}
+              src={item.img}
               alt={item.name}
               className="food-img"
             />
