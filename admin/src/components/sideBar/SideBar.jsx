@@ -1,5 +1,6 @@
 import React from "react";
-import "./SideBar.css";
+import "./sidebar.css";
+
 import { NavLink } from "react-router-dom";
 import {
   FaClipboardList,
