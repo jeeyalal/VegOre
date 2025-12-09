@@ -121,32 +121,34 @@
 // export default foodRouter;
 
 
-
 import express from "express";
 import { addFood, listFood, removeFood } from "../controllers/foodController.js";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 import authMiddleware from "../middleware/auth.js";
 
-import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinary.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const foodRouter = express.Router();
 
-// ✅ CLOUDINARY STORAGE
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "vegore",
-    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+// ✅ MULTER LOCAL STORAGE
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../uploads"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "_" + file.originalname);
   },
 });
 
 const upload = multer({ storage });
 
-// ✅ PUBLIC ROUTE
+// ✅ PUBLIC
 foodRouter.get("/list", listFood);
 
-// ✅ ADMIN ROUTES
+// ✅ ADMIN PROTECTED
 foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
 foodRouter.post("/remove", authMiddleware, removeFood);
 

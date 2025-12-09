@@ -282,30 +282,24 @@
 
 
 
-
-
-
-
-
-
-
-
-
 import foodModel from "../models/foodModel.js";
+import fs from "fs";
+import path from "path";
 
-// ✅ ADD FOOD — CLOUDINARY
+// ✅ ADD FOOD
 const addFood = async (req, res) => {
   try {
-    console.log("FILE:", req.file);
-
     if (!req.file) {
-      return res.status(400).json({ success: false, message: "Image is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Image is required",
+      });
     }
 
     const food = new foodModel({
       id: req.body.id,
       name: req.body.name,
-      img: req.file.path,   // ✅ CLOUDINARY URL
+      img: req.file.filename, // ✅ LOCAL FILE NAME
       price: req.body.price,
 
       nutrition: {
@@ -322,7 +316,7 @@ const addFood = async (req, res) => {
 
     await food.save();
 
-    res.status(201).json({
+    res.json({
       success: true,
       message: "✅ Food added successfully",
       food,
@@ -342,7 +336,7 @@ const listFood = async (req, res) => {
     const foods = await foodModel.find({});
     res.json({ success: true, data: foods });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Fetch failed" });
+    res.status(500).json({ success: false, message: "Failed to fetch food" });
   }
 };
 
@@ -353,15 +347,32 @@ const removeFood = async (req, res) => {
 
     const food = await foodModel.findById(id);
     if (!food) {
-      return res.status(404).json({ success: false, message: "Food not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Food not found",
+      });
+    }
+
+    // ✅ DELETE IMAGE
+    const imagePath = path.join("uploads", food.img);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
     }
 
     await foodModel.findByIdAndDelete(id);
 
-    res.json({ success: true, message: "✅ Food deleted successfully" });
+    res.json({
+      success: true,
+      message: "✅ Food deleted successfully",
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Delete failed" });
+    console.error("DELETE FOOD ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Delete failed",
+    });
   }
 };
 
 export { addFood, listFood, removeFood };
+
