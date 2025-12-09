@@ -121,6 +121,44 @@
 // export default foodRouter;
 
 
+// import express from "express";
+// import { addFood, listFood, removeFood } from "../controllers/foodController.js";
+// import multer from "multer";
+// import path from "path";
+// import { fileURLToPath } from "url";
+// import authMiddleware from "../middleware/auth.js";
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+// const foodRouter = express.Router();
+
+// // ✅ MULTER LOCAL STORAGE
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, path.join(__dirname, "../uploads"));
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "_" + file.originalname);
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// // ✅ PUBLIC
+// foodRouter.get("/list", listFood);
+
+// // ✅ ADMIN PROTECTED
+// foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
+// foodRouter.post("/remove", authMiddleware, removeFood);
+
+// export default foodRouter;
+
+
+
+
+
+
 import express from "express";
 import { addFood, listFood, removeFood } from "../controllers/foodController.js";
 import multer from "multer";
@@ -145,10 +183,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// ✅ PUBLIC
+// ✅ PUBLIC ROUTE
 foodRouter.get("/list", listFood);
 
-// ✅ ADMIN PROTECTED
+// ✅ ADMIN PROTECTED ROUTES
 foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
 foodRouter.post("/remove", authMiddleware, removeFood);
 
