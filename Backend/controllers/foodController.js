@@ -1,15 +1,11 @@
+
 // import foodModel from "../models/foodModel.js";
 // import fs from "fs";
 // import path from "path";
 
-// // ✅=========================
-// // ✅ ADD FOOD (ADMIN)
-// // ✅=========================
+// // ✅ ADD FOOD
 // const addFood = async (req, res) => {
 //   try {
-//     console.log("REQ.FILE =>", req.file);
-//     console.log("REQ.BODY =>", req.body);
-
 //     if (!req.file) {
 //       return res.status(400).json({
 //         success: false,
@@ -20,7 +16,7 @@
 //     const food = new foodModel({
 //       id: req.body.id,
 //       name: req.body.name,
-//       img: req.file.filename, // ✅ CORRECT IMAGE FIELD
+//       img: req.file.filename, // ✅ FIELD IS img
 //       price: req.body.price,
 
 //       nutrition: {
@@ -37,7 +33,7 @@
 
 //     await food.save();
 
-//     res.status(201).json({
+//     res.json({
 //       success: true,
 //       message: "✅ Food added successfully",
 //       food,
@@ -51,35 +47,22 @@
 //   }
 // };
 
-// // ✅=========================
-// // ✅ LIST FOOD (PUBLIC)
-// // ✅=========================
+// // ✅ LIST FOOD
 // const listFood = async (req, res) => {
 //   try {
 //     const foods = await foodModel.find({});
-//     res.json({
-//       success: true,
-//       data: foods,
-//     });
+//     res.json({ success: true, data: foods });
 //   } catch (error) {
-//     console.error("LIST FOOD ERROR:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to fetch food",
-//     });
+//     res.status(500).json({ success: false, message: "Failed to fetch food" });
 //   }
 // };
 
-// // ✅=========================
-// // ✅ REMOVE FOOD (ADMIN)
-// // ✅=========================
+// // ✅ REMOVE FOOD
 // const removeFood = async (req, res) => {
 //   try {
 //     const { id } = req.body;
 
-//     // ✅ FIND BY MONGO _id
 //     const food = await foodModel.findById(id);
-
 //     if (!food) {
 //       return res.status(404).json({
 //         success: false,
@@ -87,13 +70,12 @@
 //       });
 //     }
 
-//     // ✅ DELETE IMAGE FILE SAFELY
+//     // ✅ DELETE IMAGE
 //     const imagePath = path.join("uploads", food.img);
 //     if (fs.existsSync(imagePath)) {
 //       fs.unlinkSync(imagePath);
 //     }
 
-//     // ✅ DELETE DB RECORD
 //     await foodModel.findByIdAndDelete(id);
 
 //     res.json({
@@ -111,24 +93,21 @@
 
 // export { addFood, listFood, removeFood };
 
-import foodModel from "../models/foodModel.js";
-import fs from "fs";
-import path from "path";
 
-// ✅ ADD FOOD
+
+import foodModel from "../models/foodModel.js";
+
+// ✅ ADD FOOD — CLOUDINARY IMAGE
 const addFood = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "Image is required",
-      });
+      return res.status(400).json({ success: false, message: "Image is required" });
     }
 
     const food = new foodModel({
       id: req.body.id,
       name: req.body.name,
-      img: req.file.filename, // ✅ FIELD IS img
+      img: req.file.path, // ✅ CLOUDINARY FULL URL
       price: req.body.price,
 
       nutrition: {
@@ -145,7 +124,7 @@ const addFood = async (req, res) => {
 
     await food.save();
 
-    res.json({
+    res.status(201).json({
       success: true,
       message: "✅ Food added successfully",
       food,
@@ -165,7 +144,8 @@ const listFood = async (req, res) => {
     const foods = await foodModel.find({});
     res.json({ success: true, data: foods });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to fetch food" });
+    console.error("LIST FOOD ERROR:", error);
+    res.status(500).json({ success: false, message: "Fetch failed" });
   }
 };
 
@@ -173,19 +153,10 @@ const listFood = async (req, res) => {
 const removeFood = async (req, res) => {
   try {
     const { id } = req.body;
-
     const food = await foodModel.findById(id);
-    if (!food) {
-      return res.status(404).json({
-        success: false,
-        message: "Food not found",
-      });
-    }
 
-    // ✅ DELETE IMAGE
-    const imagePath = path.join("uploads", food.img);
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
+    if (!food) {
+      return res.status(404).json({ success: false, message: "Food not found" });
     }
 
     await foodModel.findByIdAndDelete(id);
