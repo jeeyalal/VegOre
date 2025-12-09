@@ -61,7 +61,7 @@ const List = ({ url }) => {
             
             {/* ✅✅✅ FINAL CORRECT IMAGE URL */}
             <img
-              src={`${url}/uploads/${item.image}`}
+              src={`${url}/uploads/${item.img}`}
               alt={item.name}
               className="food-img"
             />
