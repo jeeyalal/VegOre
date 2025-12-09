@@ -291,12 +291,13 @@
 
 
 
-
 import foodModel from "../models/foodModel.js";
 
-// ✅ ADD FOOD (CLOUDINARY)
+// ✅ ADD FOOD — CLOUDINARY
 const addFood = async (req, res) => {
   try {
+    console.log("FILE:", req.file);
+
     if (!req.file) {
       return res.status(400).json({ success: false, message: "Image is required" });
     }
@@ -304,7 +305,7 @@ const addFood = async (req, res) => {
     const food = new foodModel({
       id: req.body.id,
       name: req.body.name,
-      img: req.file.path, // ✅ CLOUDINARY FULL URL
+      img: req.file.path,   // ✅ CLOUDINARY URL
       price: req.body.price,
 
       nutrition: {
@@ -341,12 +342,11 @@ const listFood = async (req, res) => {
     const foods = await foodModel.find({});
     res.json({ success: true, data: foods });
   } catch (error) {
-    console.error("LIST FOOD ERROR:", error);
     res.status(500).json({ success: false, message: "Fetch failed" });
   }
 };
 
-// ✅ REMOVE FOOD (DB ONLY)
+// ✅ REMOVE FOOD
 const removeFood = async (req, res) => {
   try {
     const { id } = req.body;
@@ -358,16 +358,9 @@ const removeFood = async (req, res) => {
 
     await foodModel.findByIdAndDelete(id);
 
-    res.json({
-      success: true,
-      message: "✅ Food deleted successfully",
-    });
+    res.json({ success: true, message: "✅ Food deleted successfully" });
   } catch (error) {
-    console.error("DELETE FOOD ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Delete failed",
-    });
+    res.status(500).json({ success: false, message: "Delete failed" });
   }
 };
 

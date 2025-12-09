@@ -90,6 +90,38 @@
 
 
 
+// import express from "express";
+// import { addFood, listFood, removeFood } from "../controllers/foodController.js";
+// import authMiddleware from "../middleware/auth.js";
+
+// import multer from "multer";
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import cloudinary from "../config/cloudinary.js";
+
+// const foodRouter = express.Router();
+
+// // ✅ CLOUDINARY STORAGE
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: "vegore",
+//     allowed_formats: ["jpg", "png", "jpeg", "webp"],
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// // ✅ PUBLIC
+// foodRouter.get("/list", listFood);
+
+// // ✅ ADMIN
+// foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
+// foodRouter.post("/remove", authMiddleware, removeFood);
+
+// export default foodRouter;
+
+
+
 import express from "express";
 import { addFood, listFood, removeFood } from "../controllers/foodController.js";
 import authMiddleware from "../middleware/auth.js";
@@ -111,10 +143,10 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// ✅ PUBLIC
+// ✅ PUBLIC ROUTE
 foodRouter.get("/list", listFood);
 
-// ✅ ADMIN
+// ✅ ADMIN ROUTES
 foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
 foodRouter.post("/remove", authMiddleware, removeFood);
 
