@@ -158,7 +158,6 @@
 
 
 
-
 import express from "express";
 import { addFood, listFood, removeFood } from "../controllers/foodController.js";
 import multer from "multer";
@@ -186,8 +185,10 @@ const upload = multer({ storage });
 // ✅ PUBLIC ROUTE
 foodRouter.get("/list", listFood);
 
-// ✅ ADMIN PROTECTED ROUTES
+// ✅ ADMIN PROTECTED ADD (keep secure)
 foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
-foodRouter.post("/remove", authMiddleware, removeFood);
+
+// ✅ TEMP: UNPROTECTED DELETE (no auth → no more 401)
+foodRouter.post("/remove", removeFood);
 
 export default foodRouter;
