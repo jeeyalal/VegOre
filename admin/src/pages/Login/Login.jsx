@@ -1,3 +1,5 @@
+
+
 // import React, { useState } from "react";
 // import axios from "axios";
 // import { toast } from "react-toastify";
@@ -5,7 +7,7 @@
 
 // const Login = () => {
 //   const navigate = useNavigate();
-//   const url = "http://localhost:4000"; // ✅ Your backend
+//   const url = "http://localhost:4000";
 
 //   const [data, setData] = useState({
 //     email: "",
@@ -24,11 +26,9 @@
 
 //       if (res.data.success) {
 //         toast.success("Admin Login Successful ✅");
-
-//         // ✅ Save token
 //         localStorage.setItem("adminToken", res.data.token);
-
-//         navigate("/"); // ✅ Redirect to dashboard
+//         navigate("/");
+//         window.location.reload();
 //       } else {
 //         toast.error(res.data.message);
 //       }
@@ -67,7 +67,6 @@
 // export default Login;
 
 
-
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -75,7 +74,9 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const url = "http://localhost:4000";
+
+  // ✅ LIVE BACKEND FROM ENV (LOCAL + VERCEL)
+  const url = import.meta.env.VITE_BACKEND_URL;
 
   const [data, setData] = useState({
     email: "",
@@ -115,6 +116,7 @@ const Login = () => {
           name="email"
           placeholder="Admin Email"
           required
+          value={data.email}
           onChange={onChangeHandler}
         />
 
@@ -123,6 +125,7 @@ const Login = () => {
           name="password"
           placeholder="Admin Password"
           required
+          value={data.password}
           onChange={onChangeHandler}
         />
 
