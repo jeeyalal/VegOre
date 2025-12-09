@@ -1,39 +1,43 @@
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
+
+
+// import { StrictMode } from "react";
+// import { createRoot } from "react-dom/client";
+// import "./index.css";
+// import App from "./App.jsx";
 // import { BrowserRouter } from "react-router-dom";
 // import { CartProvider } from "./context/CartContext.jsx";
-// import { SubscriptionProvider } from './context/SubscriptionContext.jsx';
-// import FoodProvider from "./context/FoodContext";   // ✅ IMPORTANT
+// import { SubscriptionProvider } from "./context/SubscriptionContext.jsx";
+// import FoodProvider from "./context/FoodContext";
 // import { ToastContainer } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 
-// createRoot(document.getElementById('root')).render(
+// // ✅ GOOGLE AUTH PROVIDER
+// import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// createRoot(document.getElementById("root")).render(
 //   <StrictMode>
 //     <BrowserRouter>
+//       <GoogleOAuthProvider clientId="321795542746-n8pe2jbbq9l9pbv1ot6q5pph5ukgaief.apps.googleusercontent.com">
 
-//       ✅ {/* FOOD PROVIDER MUST WRAP EVERYTHING */}
-//       <FoodProvider>
+//         <FoodProvider>
+//           <CartProvider>
+//             <SubscriptionProvider>
 
-//         <CartProvider>
-//           <SubscriptionProvider>
+//               <App />
 
-//             <App />
+//               <ToastContainer
+//                 position="top-right"
+//                 theme="colored"
+//                 autoClose={2000}
+//                 pauseOnHover={false}
+//                 newestOnTop={true}
+//               />
 
-//             <ToastContainer
-//               position="top-right"
-//               theme="colored"
-//               autoClose={2000}
-//               pauseOnHover={false}
-//               newestOnTop={true}
-//             />
+//             </SubscriptionProvider>
+//           </CartProvider>
+//         </FoodProvider>
 
-//           </SubscriptionProvider>
-//         </CartProvider>
-
-//       </FoodProvider>
-
+//       </GoogleOAuthProvider>
 //     </BrowserRouter>
 //   </StrictMode>
 // );
@@ -49,21 +53,16 @@ import { SubscriptionProvider } from "./context/SubscriptionContext.jsx";
 import FoodProvider from "./context/FoodContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// ✅ GOOGLE AUTH PROVIDER
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <GoogleOAuthProvider clientId="321795542746-n8pe2jbbq9l9pbv1ot6q5pph5ukgaief.apps.googleusercontent.com">
-
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <FoodProvider>
           <CartProvider>
             <SubscriptionProvider>
-
               <App />
-
               <ToastContainer
                 position="top-right"
                 theme="colored"
@@ -71,11 +70,9 @@ createRoot(document.getElementById("root")).render(
                 pauseOnHover={false}
                 newestOnTop={true}
               />
-
             </SubscriptionProvider>
           </CartProvider>
         </FoodProvider>
-
       </GoogleOAuthProvider>
     </BrowserRouter>
   </StrictMode>

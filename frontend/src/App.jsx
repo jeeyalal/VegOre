@@ -77,13 +77,13 @@ export default function App() {
                 <Route path="/subscription/success" element={<SubscriptionSuccess />} />
 
                 {/* dashboard */}
-                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                 {/* support */}
-                 <Route path="/faq" element={<FAQ />} />
-        <Route path="/refund-policy" element={<RefundPolicy />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-conditions" element={<TermsConditions />} />
+                {/* support */}
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-conditions" element={<TermsConditions />} />
               </Routes>
               <Footer />
             </>
