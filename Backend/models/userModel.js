@@ -1,39 +1,24 @@
-// import mongoose from "mongoose";
 
-// const userSchema = new mongoose.Schema(
-//   {
-//     // ✅ Common Fields
-//     name: { type: String, required: true },
-//     email: { type: String, required: true, unique: true },
 
-//     // ✅ Google Login Fields (optional for admin)
-//     googleId: { type: String, default: "" },
-//     picture: { type: String, default: "" },
 
-//     // ✅ Admin Login Field (optional for normal user)
-//     password: { type: String, default: "" },
-
-//     // ✅ Role Control
-//     role: {
-//       type: String,
-//       enum: ["user", "admin"],
-//       default: "user",
-//     },
-
-//     cartData: { type: Object, default: {} },
-//   },
-//   {
-//     minimize: false,
-//     timestamps: true,
-//   }
-// );
-
-// const userModel = mongoose.models.user || mongoose.model("user", userSchema);
-
-// export default userModel;
 
 
 import mongoose from "mongoose";
+
+const addressSchema = new mongoose.Schema(
+  {
+    label: String,
+    name: String,
+    phone: String,
+    line1: String,
+    line2: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String,
+  },
+  { _id: false }
+);
 
 const userSchema = new mongoose.Schema(
   {
@@ -51,15 +36,16 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
+    addresses: {
+      type: [addressSchema],
+      default: [],
+    },
+
     cartData: { type: Object, default: {} },
   },
-  {
-    minimize: false,
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-const userModel =
-  mongoose.models.user || mongoose.model("user", userSchema);
+export default mongoose.models.user || mongoose.model("user", userSchema);
 
-export default userModel;
+

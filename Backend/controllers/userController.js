@@ -252,8 +252,7 @@
 
 
 
-
-
+// Backend/controllers/userController.js
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -316,6 +315,7 @@ const googleAuth = async (req, res) => {
       message: "Login successful",
     });
   } catch (err) {
+    // More detailed logging might be helpful during development
     res.status(400).json({
       success: false,
       message: "Google login failed",
@@ -386,4 +386,22 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-export { googleAuth, registerAdmin, loginAdmin };
+// =======================
+// Get saved addresses for logged-in user
+// =======================
+const getAddresses = async (req, res) => {
+  try {
+    const token = req.headers.token || req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ success: false, message: "Not authorized" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.id).select("addresses");
+
+    res.json({ success: true, addresses: user?.addresses || [] });
+  } catch (err) {
+    console.error("GET ADDRESSES ERROR:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export { googleAuth, registerAdmin, loginAdmin, getAddresses };

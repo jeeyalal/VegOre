@@ -13,6 +13,7 @@ export default function AboutPage() {
         <h1 className="text-4xl sm:text-5xl font-extrabold text-green-700 leading-snug">
           About <span className="text-emerald-600">VegOre</span>
         </h1>
+        
 
         <p className="text-gray-600 mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
           Healthy. Tasty. High-Protein. Pure Veg.  

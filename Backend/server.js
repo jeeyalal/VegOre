@@ -7,6 +7,11 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
+
+
+import orderRouter from "./routes/orderRoutes.js";
+
+
 dotenv.config();
 
 const app = express();
@@ -73,6 +78,7 @@ connectDB();
 // =============================================
 app.use("/api/food", foodRouter);
 app.use("/api/user", userRouter);
+app.use("/api/orders", orderRouter);
 
 // =============================================
 // Root Test Route
