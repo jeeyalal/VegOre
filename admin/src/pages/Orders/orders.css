@@ -179,3 +179,14 @@
     font-size: 18px;
   }
 }
+/* Orders Grid */
+.orders-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.order-card {
+  flex: 1 1 320px;
+  max-width: 450px;
+}
