@@ -93,20 +93,25 @@ app.get("/", (req, res) => {
 
 // Debug: list of mounted routes (not for production)
 app.get('/__routes', (req, res) => {
-  const routes = [];
-  app._router.stack.forEach((middleware) => {
-    if (middleware.route) {
-      // routes registered directly on the app
-      routes.push(middleware.route.path);
-    } else if (middleware.name === 'router') {
-      // router middleware
-      middleware.handle.stack.forEach(function (handler) {
-        const route = handler.route;
-        route && routes.push(route.path);
-      });
-    }
-  });
-  res.json({ routes });
+  try {
+    const routes = [];
+    app._router.stack.forEach((middleware) => {
+      try {
+        if (middleware.route) {
+          routes.push(middleware.route.path);
+        } else if (middleware.name === 'router' && middleware.handle && Array.isArray(middleware.handle.stack)) {
+          middleware.handle.stack.forEach((handler) => {
+            if (handler && handler.route && handler.route.path) routes.push(handler.route.path);
+          });
+        }
+      } catch (err) {
+        // ignore per-middleware errors
+      }
+    });
+    res.json({ routes });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to list routes' });
+  }
 });
 
 // =============================================
