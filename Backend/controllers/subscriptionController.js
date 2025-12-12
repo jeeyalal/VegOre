@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 export const createSubscription = async (req, res) => {
   try {
+    console.log('CREATE SUBS REQUEST BODY:', req.body)
     const token = req.headers.token || req.headers.authorization?.split(" ")[1];
     let userId;
     if (token) {
@@ -49,6 +50,7 @@ export const createSubscription = async (req, res) => {
       orderId: payment?.orderId || `SUB${Date.now()}`,
       payment,
     });
+    console.log('SUBS CREATED:', subscription._id)
 
     // Save address into user's addresses if logged in
     if (userId && userDetails) {

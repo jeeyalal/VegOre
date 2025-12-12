@@ -48,6 +48,7 @@ export default function Payment() {
 
       // Send subscription data to backend
       try {
+        console.log('SUBSCRIPTION PAYLOAD:', payload)
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
         const token = localStorage.getItem("token");
         const payload = {
@@ -68,13 +69,20 @@ export default function Payment() {
         if (token) headers.token = token;
 
           const res = await axios.post(`${BACKEND_URL}/api/subscriptions/create`, payload, { headers });
-          if (res.data?.success && res.data.subscription) {
+            console.log('CREATE SUB RESPONSE', res?.data)
+            if (res.data?.success && res.data.subscription) {
             const sub = res.data.subscription;
             // Update context orderId with backend id if returned
             setSubscription((prev) => ({ ...prev, orderId: sub._id || sub.orderId || prev.orderId }));
           }
       } catch (err) {
-        console.error("Failed to create subscription record", err);
+          console.error("Failed to create subscription record", err);
+          if (err?.response?.data) {
+            console.error('Response error:', err.response.data)
+            alert(`Failed to create subscription: ${err.response?.data?.message || 'server error'}`)
+          } else {
+            alert('Failed to create subscription: network or server error')
+          }
       }
 
       setProcessing(false);
