@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 
 import orderRouter from "./routes/orderRoutes.js";
 import subscriptionRouter from "./routes/subscriptionRoutes.js";
+import paymentRouter from "./routes/paymentRoutes.js";
 
 
 dotenv.config();
@@ -81,6 +82,7 @@ app.use("/api/food", foodRouter);
 app.use("/api/user", userRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/subscriptions", subscriptionRouter);
+app.use("/api/payments", paymentRouter);
 
 // =============================================
 // Root Test Route
