@@ -11,8 +11,8 @@ export const initiatePayment = async (amount, item = null) => {
       return false;
     }
     if (!token) {
-      alert("Please login to complete the payment.");
-      return;
+      toast.error("Please login to complete the payment.");
+      return false;
     }
 
     const res = await fetch(`${BACKEND_URL}/api/payments/create-order`, {
@@ -23,8 +23,8 @@ export const initiatePayment = async (amount, item = null) => {
 
     const data = await res.json();
     if (!data.success) {
-      alert("Failed to create payment order");
-      return;
+      toast.error("Failed to create payment order.");
+      return false;
     }
 
     const order = data.order;
@@ -61,13 +61,12 @@ export const initiatePayment = async (amount, item = null) => {
 
           const verifyData = await verifyRes.json();
           if (!verifyData.success) throw new Error("Verification failed");
-
           toast.success("Payment successful!");
           window.location.href = "/order-success";
           return true;
         } catch (err) {
           console.error("Payment verify failed", err);
-          alert("Payment verification failed.");
+          toast.error("Payment verification failed.");
         }
       },
     };
