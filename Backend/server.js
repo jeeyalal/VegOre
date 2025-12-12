@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 
 
 import orderRouter from "./routes/orderRoutes.js";
+import subscriptionRouter from "./routes/subscriptionRoutes.js";
 
 
 dotenv.config();
@@ -79,6 +80,7 @@ connectDB();
 app.use("/api/food", foodRouter);
 app.use("/api/user", userRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/subscriptions", subscriptionRouter);
 
 // =============================================
 // Root Test Route

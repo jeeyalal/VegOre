@@ -1,5 +1,6 @@
 // src/pages/Subscription/Payment.jsx
 import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "../../context/SubscriptionContext";
 import { CreditCard, Smartphone, Building2, Check, Loader2 } from "lucide-react";
@@ -35,14 +36,46 @@ export default function Payment() {
     setProcessing(true);
 
     // Simulate payment processing
-    setTimeout(() => {
+    setTimeout(async () => {
       const orderId = `VEG${Date.now()}`;
-      
+
+      // Update subscription status in context
       setSubscription((prev) => ({
         ...prev,
         paymentStatus: "success",
         orderId: orderId,
       }));
+
+      // Send subscription data to backend
+      try {
+        const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const token = localStorage.getItem("token");
+        const payload = {
+          planType: subscription.planType,
+          planName: subscription.planName,
+          duration: subscription.duration,
+          dietType: subscription.dietType,
+          timeSlots: subscription.timeSlots,
+          selectedDishes: subscription.selectedDishes,
+          specialNotes: subscription.specialNotes,
+          userDetails: subscription.userDetails,
+          basePrice: subscription.basePrice,
+          totalPrice: subscription.totalPrice,
+          payment: { provider: selectedMethod, status: "success", orderId },
+        };
+
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers.token = token;
+
+          const res = await axios.post(`${BACKEND_URL}/api/subscriptions/create`, payload, { headers });
+          if (res.data?.success && res.data.subscription) {
+            const sub = res.data.subscription;
+            // Update context orderId with backend id if returned
+            setSubscription((prev) => ({ ...prev, orderId: sub._id || sub.orderId || prev.orderId }));
+          }
+      } catch (err) {
+        console.error("Failed to create subscription record", err);
+      }
 
       setProcessing(false);
       navigate("/subscription/success");
