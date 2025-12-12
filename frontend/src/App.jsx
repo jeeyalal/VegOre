@@ -36,6 +36,8 @@ import {
   Checkout,
   Payment,
   SubscriptionSuccess,
+  // user subscriptions
+  UserSubscriptions,
 } from "./pages/Subscription";
 
 // Admin
@@ -76,6 +78,7 @@ export default function App() {
                 <Route path="/subscription/checkout" element={<Checkout />} />
                 <Route path="/subscription/payment" element={<Payment />} />
                 <Route path="/subscription/success" element={<SubscriptionSuccess />} />
+                <Route path="/subscription/list" element={<UserSubscriptions />} />
 
                 {/* dashboard */}
                 <Route path="/dashboard" element={<Dashboard />} />
