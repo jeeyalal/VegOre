@@ -12,53 +12,130 @@ export default function Payment() {
   const [processing, setProcessing] = useState(false);
 
   const paymentMethods = [
-    {
-      id: "card",
-      name: "Credit/Debit Card",
-      icon: CreditCard,
-      description: "Pay securely with your card",
-    },
-    {
-      id: "upi",
-      name: "UPI",
-      icon: Smartphone,
-      description: "Pay using UPI apps",
-    },
-    {
-      id: "netbanking",
-      name: "Net Banking",
-      icon: Building2,
-      description: "Pay through your bank",
-    },
-  ];
-
-  const handlePayment = () => {
     setProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(async () => {
-      const orderId = `VEG${Date.now()}`;
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+    const token = localStorage.getItem("token");
 
-      // Update subscription status in context
-      setSubscription((prev) => ({
-        ...prev,
-        paymentStatus: "success",
-        orderId: orderId,
-      }));
+    // if razorpay key is configured, use it
+    const RZ_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
+    if (!RZ_KEY) {
+      // Fallback to simulated success
+      setTimeout(async () => {
+        const orderId = `VEG${Date.now()}`;
+        setSubscription((prev) => ({ ...prev, paymentStatus: "success", orderId }));
+        try {
+          const payload = {
+            planType: subscription.planType,
+            planName: subscription.planName,
+            duration: subscription.duration,
+            dietType: subscription.dietType,
+            timeSlots: subscription.timeSlots,
+            selectedDishes: subscription.selectedDishes,
+            specialNotes: subscription.specialNotes,
+            userDetails: subscription.userDetails,
+            basePrice: subscription.basePrice,
+            totalPrice: subscription.totalPrice,
+            payment: { provider: selectedMethod, status: "success", orderId },
+          };
+          const headers = { "Content-Type": "application/json" };
+          if (token) headers.token = token;
+          const res = await axios.post(`${BACKEND_URL}/api/subscriptions/create`, payload, { headers });
+          if (res.data?.success && res.data.subscription) {
+            const sub = res.data.subscription;
+            setSubscription((prev) => ({ ...prev, orderId: sub._id || sub.orderId || prev.orderId }));
+          }
+        } catch (err) {
+          console.error("Failed to create subscription record", err);
+        }
+        setProcessing(false);
+        navigate("/subscription/success");
+      }, 2000);
+      return;
+    }
 
-      // Send subscription data to backend
+    // Real razorpay flow
+    (async () => {
       try {
-        console.log('SUBSCRIPTION PAYLOAD:', payload)
-        const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-        const token = localStorage.getItem("token");
-        const payload = {
-          planType: subscription.planType,
-          planName: subscription.planName,
-          duration: subscription.duration,
-          dietType: subscription.dietType,
-          timeSlots: subscription.timeSlots,
-          selectedDishes: subscription.selectedDishes,
-          specialNotes: subscription.specialNotes,
+        // create order on backend
+        const createRes = await axios.post(`${BACKEND_URL}/api/payments/create-order`, { amount: subscription.totalPrice }, { headers: { token } });
+        if (!createRes.data?.success) throw new Error(createRes.data?.message || 'Create order failed');
+        const order = createRes.data.order;
+        const key = createRes.data.key || RZ_KEY;
+
+        // load Razorpay script (if not provided globally)
+        if (!window.Razorpay) {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
+        }
+
+        const options = {
+          key,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'VegOre',
+          description: subscription.planName || 'Subscription',
+          order_id: order.id,
+          handler: async function (response) {
+            // call verify on backend with the subscription data
+            try {
+              const verifyPayload = {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                subscriptionData: {
+                  planType: subscription.planType,
+                  planName: subscription.planName,
+                  duration: subscription.duration,
+                  dietType: subscription.dietType,
+                  timeSlots: subscription.timeSlots,
+                  selectedDishes: subscription.selectedDishes,
+                  specialNotes: subscription.specialNotes,
+                  userDetails: subscription.userDetails,
+                  basePrice: subscription.basePrice,
+                  totalPrice: subscription.totalPrice,
+                }
+              };
+
+              const verifyRes = await axios.post(`${BACKEND_URL}/api/payments/verify`, verifyPayload, { headers: { token } });
+              if (verifyRes.data?.success) {
+                const sub = verifyRes.data.subscription || verifyRes.data.data || null;
+                if (sub) {
+                  setSubscription((prev) => ({ ...prev, orderId: sub._id || sub.orderId || prev.orderId }));
+                }
+              }
+            } catch (err) {
+              console.error('VERIFY ERROR', err);
+              alert('Payment verification failed. Please contact support or try again');
+            }
+
+            setProcessing(false);
+            navigate('/subscription/success');
+          },
+          prefill: {
+            name: subscription.userDetails?.name,
+            email: subscription.userDetails?.email,
+            contact: subscription.userDetails?.phone,
+          },
+          notes: {
+            plan: subscription.planName,
+          },
+          theme: { color: '#38A169' },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } catch (err) {
+        console.error('Razorpay flow error', err);
+        alert(err.message || 'Payment failed');
+        setProcessing(false);
+      }
+    })();
           userDetails: subscription.userDetails,
           basePrice: subscription.basePrice,
           totalPrice: subscription.totalPrice,
