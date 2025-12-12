@@ -163,7 +163,7 @@ import { addFood, listFood, removeFood } from "../controllers/foodController.js"
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-import authMiddleware from "../middleware/auth.js";
+import { authAdmin } from "../middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -186,9 +186,9 @@ const upload = multer({ storage });
 foodRouter.get("/list", listFood);
 
 // ✅ ADMIN PROTECTED ADD (keep secure)
-foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
+foodRouter.post("/add", authAdmin, upload.single("image"), addFood);
 
 // ✅ TEMP: UNPROTECTED DELETE (no auth → no more 401)
-foodRouter.post("/remove", removeFood);
+foodRouter.post("/remove", authAdmin, removeFood);
 
 export default foodRouter;
