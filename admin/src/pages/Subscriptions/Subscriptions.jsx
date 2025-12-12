@@ -47,7 +47,7 @@ const Subscriptions = () => {
                 <div className="text-right">
                   <div className="font-bold text-green-700">₹{sub.totalPrice}</div>
                   <div className="text-xs text-gray-500">{(new Date(sub.createdAt)).toLocaleString()}</div>
-                  <div className="text-xs text-gray-500">Status: {sub.paymentStatus}</div>
+                  <div className="text-xs text-gray-500">Status: {sub.status} • Payment: {sub.paymentStatus}</div>
                 </div>
               </div>
 
