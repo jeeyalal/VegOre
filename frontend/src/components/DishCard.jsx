@@ -242,12 +242,10 @@ export default function DishCard({ dish }) {
   };
 
   // ⭐ BUY NOW → direct Razorpay one-click (falls back to modal if no key)
-  const handleBuyNow = () => {
-    // try quick checkout using Razorpay util
-    try {
-      initiatePayment(dish.price, { ...dish, qty: 1 });
-    } catch (err) {
-      // if something fails, fallback to modal
+  const handleBuyNow = async () => {
+    // try quick checkout using Razorpay util; fallback to modal if not available
+    const started = await initiatePayment(dish.price, { ...dish, qty: 1 });
+    if (!started) {
       setCheckoutItems([{ ...dish, qty: 1 }]);
       setCheckoutOpen(true);
     }

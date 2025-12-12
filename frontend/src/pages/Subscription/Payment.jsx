@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "../../context/SubscriptionContext";
 import { CreditCard, Smartphone, Building2, Check, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -126,6 +127,7 @@ export default function Payment() {
               orderId: sub._id || sub.orderId,
             }));
 
+            toast.success("Subscription created successfully");
             navigate("/subscription/success");
           } catch (err) {
             console.error("Payment verification failed", err);

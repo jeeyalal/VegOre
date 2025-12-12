@@ -216,7 +216,10 @@ export default function CartPage() {
               Continue to Checkout
             </button>
             <button
-              onClick={() => initiatePayment(total)}
+              onClick={async () => {
+                const started = await initiatePayment(total);
+                if (!started) setOpenCheckout(true);
+              }}
               className="ml-3 bg-yellow-500 text-gray-900 py-3 px-6 rounded-xl mt-3 font-bold hover:bg-yellow-600 transition shadow-md"
             >
               Pay Now

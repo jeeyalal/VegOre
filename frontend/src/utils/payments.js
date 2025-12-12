@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export const initiatePayment = async (amount, item = null) => {
   try {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
@@ -5,8 +7,8 @@ export const initiatePayment = async (amount, item = null) => {
     const token = localStorage.getItem("token");
 
     if (!RZ_KEY) {
-      alert("Razorpay key not configured. Fallback to offline mock.");
-      return;
+      toast.error("Razorpay key not configured. Falling back to offline mock.");
+      return false;
     }
     if (!token) {
       alert("Please login to complete the payment.");
@@ -60,8 +62,9 @@ export const initiatePayment = async (amount, item = null) => {
           const verifyData = await verifyRes.json();
           if (!verifyData.success) throw new Error("Verification failed");
 
-          alert("Payment successful!");
+          toast.success("Payment successful!");
           window.location.href = "/order-success";
+          return true;
         } catch (err) {
           console.error("Payment verify failed", err);
           alert("Payment verification failed.");
@@ -71,7 +74,9 @@ export const initiatePayment = async (amount, item = null) => {
 
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
-  } catch (error) {
+    } catch (error) {
     console.error("Payment Error:", error);
+      return false;
   }
+  return true;
 };
