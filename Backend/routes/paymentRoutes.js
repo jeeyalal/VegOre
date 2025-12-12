@@ -11,6 +11,7 @@ router.post('/create-order', authUser, createOrder);
 router.post('/verify', authUser, verifyPaymentAndCreateSubscription);
 
 // public webhook for razorpay events
-router.post('/webhook', express.json({ type: '*/*' }), razorpayWebhook);
+// use raw body parser for webhook signature verification
+router.post('/webhook', express.raw({ type: 'application/json' }), razorpayWebhook);
 
 export default router;

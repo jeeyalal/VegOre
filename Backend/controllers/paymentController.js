@@ -108,8 +108,8 @@ export const razorpayWebhook = async (req, res) => {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
     const signature = req.headers['x-razorpay-signature'];
     if (!webhookSecret || !signature) return res.status(400).send('Invalid request');
-
-    const body = JSON.stringify(req.body);
+    // Raw buffer should be available on req.body because we used express.raw in the router
+    const body = req.body instanceof Buffer ? req.body.toString('utf8') : JSON.stringify(req.body);
     const hmac = crypto.createHmac('sha256', webhookSecret).update(body).digest('hex');
     if (hmac !== signature) {
       console.warn('Invalid webhook signature');
