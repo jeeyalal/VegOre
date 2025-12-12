@@ -15,6 +15,7 @@ const Subscriptions = () => {
     try {
       setLoading(true)
       const res = await axios.get(`${url}/api/subscriptions/list`, { headers: { token } })
+      console.log('ADMIN SUBS FETCH', res.data)
       if (res.data.success) setSubscriptions(res.data.data)
     } catch (err) {
       console.error('Fetch subs error', err)
@@ -30,6 +31,9 @@ const Subscriptions = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Subscriptions</h2>
+      <div className="mb-4">
+        <button className="bg-green-600 text-white px-3 py-1 rounded" onClick={fetchSubscriptions}>Refresh</button>
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : subscriptions.length === 0 ? (
