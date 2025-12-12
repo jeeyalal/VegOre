@@ -15,14 +15,14 @@ For the frontend set the following in `frontend/.env` (client-safe key id only):
 
 ## Endpoints
 - `POST /api/payments/create-order` (auth required): Creates a Razorpay order via SDK on the backend.
-- `POST /api/payments/verify` (auth required): Verify payment signature and create subscription. Also used to confirm payment from frontend after successful Razorpay checkout.
+- `POST /api/payments/verify` (auth required): Verify payment signature and create subscription or create an order (if `orderData` provided). Also used to confirm payment from frontend after successful Razorpay checkout.
 - `POST /api/payments/webhook`: Public webhook callback to update subscriptions based on Razorpay events (uses signature verification with `RAZORPAY_WEBHOOK_SECRET`).
 
 ## Flow (Recommended)
 1. Frontend calls `POST /api/payments/create-order` with { amount }.
 2. Backend creates a Razorpay order, returns order for frontend.
 3. Frontend opens Razorpay checkout (checkout.js) with the returned `order_id` and Key ID.
-4. On successful payment, frontend calls `POST /api/payments/verify` with `razorpay_order_id`, `razorpay_payment_id`, `razorpay_signature` and the `subscriptionData`.
+4. On successful payment, frontend calls `POST /api/payments/verify` with `razorpay_order_id`, `razorpay_payment_id`, `razorpay_signature` and either `subscriptionData` (for subscription flow) or `orderData` (for cart/one-time orders).
 5. Backend verifies signature and adds the subscription record into the DB with payment status 'success' and returns the created subscription.
 6. Admin can view the subscription at `/api/subscriptions/list`, and admin UI shows updated status.
 

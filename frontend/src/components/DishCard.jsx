@@ -213,6 +213,7 @@ import { useState } from "react";
 import { Info, X, ShoppingCart, IndianRupee, ShoppingBag } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { toast } from "react-toastify";
+import { initiatePayment } from "../utils/payments";
 import CheckoutModal from "./CheckoutModal"; // ⭐ BUY NOW POPUP
 
 export default function DishCard({ dish }) {
@@ -240,10 +241,16 @@ export default function DishCard({ dish }) {
     );
   };
 
-  // ⭐ BUY NOW → open CheckoutModal
+  // ⭐ BUY NOW → direct Razorpay one-click (falls back to modal if no key)
   const handleBuyNow = () => {
-    setCheckoutItems([{ ...dish, qty: 1 }]);
-    setCheckoutOpen(true);
+    // try quick checkout using Razorpay util
+    try {
+      initiatePayment(dish.price, { ...dish, qty: 1 });
+    } catch (err) {
+      // if something fails, fallback to modal
+      setCheckoutItems([{ ...dish, qty: 1 }]);
+      setCheckoutOpen(true);
+    }
   };
 
   return (

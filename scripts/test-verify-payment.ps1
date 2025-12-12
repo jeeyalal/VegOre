@@ -4,7 +4,8 @@ param(
   [string]$razorpay_payment_id = "",
   [string]$razorpay_signature = "",
   [string]$token = "",
-  [string]$userJson = "{}" # JSON string of subscriptionData (plan fields, etc.)
+  [string]$subscriptionJson = "{}", # JSON string of subscriptionData (plan fields, etc.)
+  [string]$orderJson = "{}" # JSON string of orderData (items, total, address)
 )
 
 if ($razorpay_order_id -eq "" -or $razorpay_payment_id -eq "" -or $razorpay_signature -eq "") {
@@ -12,12 +13,19 @@ if ($razorpay_order_id -eq "" -or $razorpay_payment_id -eq "" -or $razorpay_sign
   exit 1
 }
 
-$payload = @{
+$payloadObj = @{
   razorpay_order_id = $razorpay_order_id
   razorpay_payment_id = $razorpay_payment_id
   razorpay_signature = $razorpay_signature
-  subscriptionData = (ConvertFrom-Json $userJson)
-} | ConvertTo-Json -Depth 6
+}
+
+if ($orderJson -and $orderJson -ne "{}") {
+  $payloadObj.orderData = ConvertFrom-Json $orderJson
+} else {
+  $payloadObj.subscriptionData = ConvertFrom-Json $subscriptionJson
+}
+
+$payload = $payloadObj | ConvertTo-Json -Depth 6
 
 $headers = @{}
 if ($token -ne "") { $headers['token'] = $token }

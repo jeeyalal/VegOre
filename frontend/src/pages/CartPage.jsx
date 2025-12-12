@@ -125,6 +125,7 @@ import { useCart } from "../context/CartContext";
 import { Trash, Plus, Minus } from "lucide-react";
 import BackButton from "../components/BackButton";
 import CheckoutModal from "../components/CheckoutModal"; // ⭐ NEW CHECKOUT POPUP
+import { initiatePayment } from "../utils/payments";
 
 export default function CartPage() {
   const { cart, removeFromCart, increaseQty, decreaseQty } = useCart();
@@ -213,6 +214,12 @@ export default function CartPage() {
                          hover:bg-green-700 transition shadow-md"
             >
               Continue to Checkout
+            </button>
+            <button
+              onClick={() => initiatePayment(total)}
+              className="ml-3 bg-yellow-500 text-gray-900 py-3 px-6 rounded-xl mt-3 font-bold hover:bg-yellow-600 transition shadow-md"
+            >
+              Pay Now
             </button>
           </div>
         </>

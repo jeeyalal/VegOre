@@ -2,6 +2,7 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import SubscriptionModel from '../models/subscriptionModel.js';
 import userModel from '../models/userModel.js';
+import OrderModel from '../models/orderModel.js';
 
 const razorpayInstance = () => {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) return null;
@@ -31,7 +32,7 @@ export const createOrder = async (req, res) => {
 
 export const verifyPaymentAndCreateSubscription = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, subscriptionData } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, subscriptionData, orderData } = req.body;
     // verify signature
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) return res.status(500).json({ success: false, message: 'Razorpay not configured' });
@@ -54,7 +55,38 @@ export const verifyPaymentAndCreateSubscription = async (req, res) => {
       }
     }
 
-    const { planType, planName, duration, dietType, timeSlots, selectedDishes, specialNotes, userDetails, basePrice, totalPrice } = subscriptionData;
+    // If orderData exists, create an Order instead of Subscription
+    if (orderData) {
+      const { items, total, address, name, email, phone } = orderData;
+      const order = await OrderModel.create({
+        user: userId,
+        name,
+        email,
+        phone,
+        address,
+        items,
+        total,
+        paymentProvider: 'razorpay',
+        paymentId: razorpay_payment_id,
+        status: 'paid',
+      });
+
+      // Save address to user if logged in
+      if (userId && address) {
+        const user = await userModel.findById(userId);
+        if (user) {
+          const exists = user.addresses?.some((a) => a.line1 === address.line1 && a.postalCode === address.postalCode);
+          if (!exists) {
+            user.addresses.push(address);
+            await user.save();
+          }
+        }
+      }
+
+      return res.status(201).json({ success: true, order });
+    }
+
+    const { planType, planName, duration, dietType, timeSlots, selectedDishes, specialNotes, userDetails, basePrice, totalPrice } = subscriptionData || {};
 
     const subscription = await SubscriptionModel.create({
       user: userId,
