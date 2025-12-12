@@ -116,11 +116,28 @@ export const razorpayWebhook = async (req, res) => {
       return res.status(400).send('Invalid signature');
     }
 
-    // For example, on payment captured event: update subscription/payment status if necessary
-    const event = req.body.event;
-    const payload = req.body.payload;
-    // Add logic to find subscription by orderId and update status based on events
-
+    const event = JSON.parse(body)?.event;
+    const payload = JSON.parse(body)?.payload;
+    // Update subscription based on event
+    if (event && payload) {
+      if (event === 'payment.captured' || event === 'payment.failed') {
+        const paymentEntity = payload.payment?.entity;
+        const rzOrderId = paymentEntity?.order_id;
+        const paymentId = paymentEntity?.id;
+        if (rzOrderId) {
+          const subs = await SubscriptionModel.findOne({ orderId: rzOrderId });
+          if (subs) {
+            const newPayStatus = event === 'payment.captured' ? 'success' : 'failed';
+            subs.paymentStatus = newPayStatus;
+            subs.payment = subs.payment || {};
+            subs.payment.provider = 'razorpay';
+            subs.payment.orderId = rzOrderId;
+            subs.payment.paymentId = paymentId;
+            await subs.save();
+          }
+        }
+      }
+    }
     console.log('RAZORPAY WEBHOOK EVENT', event);
     return res.status(200).send('ok');
   } catch (err) {
