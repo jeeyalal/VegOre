@@ -7,6 +7,9 @@ const router = express.Router();
 // create razorpay order
 router.post('/create-order', authUser, createOrder);
 
+// ping endpoint to check router mount
+router.get('/ping', (req, res) => res.json({ ok: true }));
+
 // verify payment and create subscription record
 router.post('/verify', authUser, verifyPaymentAndCreateSubscription);
 
