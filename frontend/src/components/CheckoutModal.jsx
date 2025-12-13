@@ -301,6 +301,7 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [addresses, setAddresses] = useState([]);
   const [user, setUser] = useState(null);
+  const [saveAddress, setSaveAddress] = useState(true); // New state to save address
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -319,30 +320,48 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      
+      // Pre-fill email from logged-in user
+      setForm(prev => ({ 
+        ...prev, 
+        name: parsedUser.name || prev.name, 
+        email: parsedUser.email || prev.email 
+      }));
+    }
+
+    // If logged in, fetch saved addresses
     if (token) {
       axios.get(`${BACKEND_URL}/api/user/addresses`, { headers: { token }})
         .then(res => {
           if (res.data.success) {
             setAddresses(res.data.addresses || []);
             if (res.data.addresses && res.data.addresses.length > 0) {
+              // Prefill with the first address
               const ad = res.data.addresses[0];
-              setForm(prev => ({ ...prev, ...ad, name: ad.name || prev.name }));
-            } else if (storedUser) {
-              setForm(prev => ({ ...prev, name: JSON.parse(storedUser).name || prev.name, email: JSON.parse(storedUser).email || prev.email }));
+              setForm(prev => ({ 
+                ...prev, 
+                ...ad, 
+                name: ad.name || prev.name,
+                email: prev.email // Keep email from user
+              }));
             }
           }
         })
         .catch(err => {
           console.log("Failed to fetch addresses", err);
         });
-    } else if (storedUser) {
-      setForm(prev => ({ ...prev, name: JSON.parse(storedUser).name || prev.name, email: JSON.parse(storedUser).email || prev.email }));
     }
-  }, []);
+  }, [token]);
 
   const handlePrefillAddress = (ad) => {
-    setForm(prev => ({ ...prev, ...ad }));
+    setForm(prev => ({ 
+      ...prev, 
+      ...ad,
+      email: prev.email // Keep email when changing address
+    }));
   };
 
   const handleChange = (e) => {
@@ -350,29 +369,53 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  // Function to save address to database
+  const saveAddressToDatabase = async (addressData) => {
+    if (!token) return; // Only save if user is logged in
+    
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/user/addresses`,
+        addressData,
+        { headers: { token } }
+      );
+      console.log("Address saved successfully");
+    } catch (err) {
+      console.error("Failed to save address", err);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.phone || !form.line1 || !form.city || !form.postalCode) {
-      toast.error("All fields are required");
+      toast.error("All required fields must be filled");
       return;
     }
 
     try {
       setLoading(true);
+      
+      const addressData = {
+        label: form.label,
+        name: form.name,
+        phone: form.phone,
+        line1: form.line1,
+        line2: form.line2,
+        city: form.city,
+        state: form.state,
+        postalCode: form.postalCode,
+        country: form.country,
+        landmark: form.landmark,
+      };
+
       const payload = {
-        items: items.map((it) => ({ dishId: it.id, name: it.name, price: it.price, qty: it.qty || 1 })),
+        items: items.map((it) => ({ 
+          dishId: it.id, 
+          name: it.name, 
+          price: it.price, 
+          qty: it.qty || 1 
+        })),
         total,
-        address: {
-          label: form.label,
-          name: form.name,
-          phone: form.phone,
-          line1: form.line1,
-          line2: form.line2,
-          city: form.city,
-          state: form.state,
-          postalCode: form.postalCode,
-          country: form.country,
-          landmark: form.landmark,
-        },
+        address: addressData,
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -381,9 +424,15 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
 
       const headers = { "Content-Type": "application/json" };
       if (token) headers.token = token;
+      
       const res = await axios.post(`${BACKEND_URL}/api/orders/create`, payload, { headers });
 
       if (res.data.success) {
+        // Save address to database if user wants to save it and is logged in
+        if (saveAddress && token) {
+          await saveAddressToDatabase(addressData);
+        }
+        
         toast.success("Order created successfully");
         clearCart();
         onSuccess && onSuccess(res.data.order);
@@ -439,7 +488,7 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
             </div>
           </div>
 
-          {/* Address / User details */}
+          {/* Contact Information */}
           <div className="mb-5 sm:mb-6">
             <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Contact Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -447,22 +496,23 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
                 name="name" 
                 onChange={handleChange} 
                 value={form.name} 
-                placeholder="Full Name" 
+                placeholder="Full Name *" 
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
               />
               <input 
                 name="email" 
                 onChange={handleChange} 
                 value={form.email} 
-                placeholder="Email" 
+                placeholder="Email *" 
                 type="email"
-                className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
+                disabled={!!user?.email} // Disable if email from login
+                className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               <input 
                 name="phone" 
                 onChange={handleChange} 
                 value={form.phone} 
-                placeholder="Phone" 
+                placeholder="Phone *" 
                 type="tel"
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
               />
@@ -476,6 +526,7 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
             </div>
           </div>
 
+          {/* Delivery Address */}
           <div className="mb-5 sm:mb-6">
             <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Delivery Address</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -483,7 +534,7 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
                 name="line1" 
                 onChange={handleChange} 
                 value={form.line1} 
-                placeholder="Address line 1" 
+                placeholder="Address line 1 *" 
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 sm:col-span-2 text-sm sm:text-base"
               />
               <input 
@@ -497,21 +548,21 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
                 name="city" 
                 onChange={handleChange} 
                 value={form.city} 
-                placeholder="City" 
+                placeholder="City *" 
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
               />
               <input 
                 name="state" 
                 onChange={handleChange} 
                 value={form.state} 
-                placeholder="State" 
+                placeholder="State *" 
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
               />
               <input 
                 name="postalCode" 
                 onChange={handleChange} 
                 value={form.postalCode} 
-                placeholder="Postal Code" 
+                placeholder="Postal Code *" 
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
               />
               <input 
@@ -522,6 +573,22 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
                 className="w-full p-3 sm:p-3.5 lg:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
               />
             </div>
+
+            {/* Save Address Checkbox - Only show if logged in */}
+            {token && (
+              <div className="mt-4 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="saveAddress"
+                  checked={saveAddress}
+                  onChange={(e) => setSaveAddress(e.target.checked)}
+                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                />
+                <label htmlFor="saveAddress" className="text-sm text-gray-700 cursor-pointer">
+                  Save this address for future orders
+                </label>
+              </div>
+            )}
           </div>
 
           {/* Saved addresses */}
