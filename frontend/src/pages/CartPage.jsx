@@ -3,7 +3,7 @@
 
 // import { useCart } from "../context/CartContext";
 // import { Trash, Plus, Minus } from "lucide-react";
-// (Razorpay removed)
+// (Payment gateway removed)
 // import BackButton from "../components/BackButton";
 // export default function CartPage() {
 //   const { cart, removeFromCart, increaseQty, decreaseQty } = useCart();
@@ -85,7 +85,7 @@
 //             </p>
 
 //             <button
-//               onClick={() => initiatePayment(total)} // ⭐ Razorpay Checkout
+//               (quick-pay removed)
 //               className="bg-green-600 text-white py-3 px-8 rounded-xl mt-3 font-bold 
 //                          hover:bg-green-700 transition shadow-md"
 //             >
