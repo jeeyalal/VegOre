@@ -29,6 +29,20 @@ export const authAdmin = (req, res, next) => {
   }
 };
 
+// Optional auth: if token provided, validate and attach user, otherwise continue without error
+export const optionalAuth = (req, res, next) => {
+  try {
+    const token = req.headers.token || req.headers.authorization?.split(' ')[1];
+    if (!token) return next();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    // ignore token errors; continue as guest
+    next();
+  }
+};
+
 export default { authUser, authAdmin };
 
 

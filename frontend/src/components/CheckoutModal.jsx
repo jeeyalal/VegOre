@@ -227,8 +227,6 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
   });
 
   const token = localStorage.getItem("token");
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-  const RZ_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -295,97 +293,18 @@ export default function CheckoutModal({ items, total, onClose, onSuccess }) {
         payment: { provider: "offline_mock", status: "pending" }
       };
 
-      // If no Razorpay key is configured, fallback to server-side offline order
-      if (!RZ_KEY) {
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers.token = token;
-        const res = await axios.post(`${BACKEND_URL}/api/orders/create`, payload, { headers });
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers.token = token;
+      const res = await axios.post(`${BACKEND_URL}/api/orders/create`, payload, { headers });
 
-        if (res.data.success) {
-          toast.success("Order created successfully");
-          clearCart(); // clear cart context
-          onSuccess && onSuccess(res.data.order);
-          onClose && onClose();
-        } else {
-          toast.error(res.data.message || "Failed to create order");
-        }
-
-        setLoading(false);
-        return;
+      if (res.data.success) {
+        toast.success("Order created successfully");
+        clearCart(); // clear cart context
+        onSuccess && onSuccess(res.data.order);
+        onClose && onClose();
+      } else {
+        toast.error(res.data.message || "Failed to create order");
       }
-
-      // Real Razorpay payment flow
-      if (!token) {
-        toast.error("Please login to complete the payment");
-        setLoading(false);
-        return;
-      }
-
-      const orderRes = await axios.post(
-        `${BACKEND_URL}/api/payments/create-order`,
-        { amount: subtotal, items: payload.items },
-        { headers: { token } }
-      );
-
-      if (!orderRes?.data?.success) {
-        toast.error("Failed to create payment order");
-        setLoading(false);
-        return;
-      }
-
-      const order = orderRes.data.order;
-
-      // Load Razorpay checkout script if needed
-      if (!window.Razorpay) {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = "https://checkout.razorpay.com/v1/checkout.js";
-          script.onload = resolve;
-          script.onerror = reject;
-          document.body.appendChild(script);
-        });
-      }
-
-      const options = {
-        key: RZ_KEY,
-        amount: order.amount,
-        currency: order.currency,
-        name: "VegOre",
-        description: "Food order",
-        order_id: order.id,
-        prefill: {
-          name: form.name,
-          email: form.email,
-          contact: form.phone,
-        },
-        handler: async function (response) {
-          try {
-            const verifyRes = await axios.post(
-              `${BACKEND_URL}/api/payments/verify`,
-              {
-                ...response,
-                orderData: payload,
-              },
-              { headers: { token } }
-            );
-
-            if (!verifyRes.data.success) {
-              throw new Error("Verification failed");
-            }
-
-            toast.success("Payment successful. Order placed.");
-            clearCart(); // clear cart
-            onSuccess && onSuccess(verifyRes.data.order || verifyRes.data.subscription || verifyRes.data.data);
-            onClose && onClose();
-          } catch (err) {
-            console.error("Payment verification failed", err);
-            toast.error("Payment verification failed. Contact support.");
-          }
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
     } catch (err) {
       console.error("Order creation error", err);
       toast.error("Server error while creating order");
