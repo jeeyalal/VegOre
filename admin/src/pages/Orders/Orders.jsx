@@ -1,5 +1,11 @@
+
+
+
+
+
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
+// import "./orders.css";
 
 // const Orders = () => {
 //   const [orders, setOrders] = useState([]);
@@ -24,38 +30,50 @@
 //   }, []);
 
 //   return (
-//     <div className="p-6">
-//       <h2 className="text-2xl font-bold mb-4">Orders</h2>
+//     <div className="orders-page">
+//       <h1 className="orders-title">Orders</h1>
+
 //       {loading ? (
-//         <p>Loading...</p>
+//         <div className="orders-loading">Loading...</div>
 //       ) : orders.length === 0 ? (
-//         <p>No orders yet.</p>
+//         <div className="orders-empty">No orders yet.</div>
 //       ) : (
-//         <div className="space-y-4">
+//         <div className="orders-grid">
 //           {orders.map(order => (
-//             <div key={order._id} className="bg-white p-4 border rounded">
-//               <div className="flex justify-between items-start">
-//                 <div>
-//                   <div className="text-lg font-semibold">{order.name} <span className="text-xs text-gray-500 ml-2">{order.email}</span></div>
-//                   <div className="text-sm text-gray-600">Phone: {order.phone}</div>
-//                   <div className="text-sm mt-2 text-gray-700">{order.address.line1}, {order.address.city} - {order.address.postalCode}</div>
-//                   <div className="text-sm text-gray-500 mt-1">{order.address.landmark}</div>
-//                 </div>
-//                 <div className="text-right">
-//                   <div className="font-bold text-green-700">₹{order.total}</div>
-//                   <div className="text-xs text-gray-500">{(new Date(order.createdAt)).toLocaleString()}</div>
-//                 </div>
+//             <div key={order._id} className="order-card">
+//               <div className="order-customer">
+//                 <h3>{order.name}</h3>
+//                 <p>{order.email}</p>
+//                 <p>Phone: {order.phone}</p>
 //               </div>
 
-//               <div className="mt-3">
-//                 <div className="font-semibold">Items:</div>
-//                 <ul className="pl-4">
+//               <div className="order-address">
+//                 <strong>Delivery Address:</strong>
+//                 {order.address.line1}, {order.address.city} - {order.address.postalCode}
+//                 <br />
+//                 {order.address.landmark}
+//               </div>
+
+//               <div className="order-meta">
+//                 <span className="order-total">₹{order.total}</span>
+//                 <span className="order-date">
+//                   {new Date(order.createdAt).toLocaleString()}
+//                 </span>
+//               </div>
+
+//               <div className="order-items">
+//                 <h4>Items:</h4>
+//                 <ul>
 //                   {order.items.map((it, idx) => (
-//                     <li key={idx}>{it.name} × {it.qty} • ₹{it.price}</li>
+//                     <li key={idx}>
+//                       <span className="item-name">
+//                         {it.name} × {it.qty}
+//                       </span>
+//                       <span className="item-price">₹{it.price}</span>
+//                     </li>
 //                   ))}
 //                 </ul>
 //               </div>
-
 //             </div>
 //           ))}
 //         </div>
@@ -69,13 +87,18 @@
 
 
 
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Trash2, RefreshCw, AlertCircle } from "lucide-react";
 import "./orders.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(null);
   const token = localStorage.getItem("adminToken");
   const url = import.meta.env.VITE_BACKEND_URL || "https://vegore-backend.onrender.com";
 
@@ -86,9 +109,38 @@ const Orders = () => {
       if (res.data.success) setOrders(res.data.data);
     } catch (err) {
       console.error("Fetch orders error", err);
+      alert("Failed to fetch orders");
     } finally {
       setLoading(false);
     }
+  };
+
+  const deleteOrder = async (orderId) => {
+    // Confirm before deleting
+    const confirmed = window.confirm("Are you sure you want to delete this order? This action cannot be undone.");
+    if (!confirmed) return;
+
+    try {
+      setDeleting(orderId);
+      const res = await axios.delete(`${url}/api/orders/${orderId}`, { headers: { token } });
+      
+      if (res.data.success) {
+        // Remove order from local state
+        setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+        alert("Order deleted successfully");
+      } else {
+        alert(res.data.message || "Failed to delete order");
+      }
+    } catch (err) {
+      console.error("Delete order error", err);
+      alert("Failed to delete order. Please try again.");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchOrders();
   };
 
   useEffect(() => {
@@ -97,16 +149,49 @@ const Orders = () => {
 
   return (
     <div className="orders-page">
-      <h1 className="orders-title">Orders</h1>
+      <div className="orders-header">
+        <h1 className="orders-title">Orders</h1>
+        <button 
+          onClick={handleRefresh} 
+          disabled={loading}
+          className="refresh-button"
+          title="Refresh orders"
+        >
+          <RefreshCw className={`refresh-icon ${loading ? 'spinning' : ''}`} />
+          Refresh
+        </button>
+      </div>
 
       {loading ? (
-        <div className="orders-loading">Loading...</div>
+        <div className="orders-loading">
+          <div className="spinner"></div>
+          Loading orders...
+        </div>
       ) : orders.length === 0 ? (
-        <div className="orders-empty">No orders yet.</div>
+        <div className="orders-empty">
+          <AlertCircle className="empty-icon" />
+          <p>No orders yet.</p>
+        </div>
       ) : (
         <div className="orders-grid">
           {orders.map(order => (
             <div key={order._id} className="order-card">
+              <div className="order-header-actions">
+                <span className="order-id">Order #{order._id.slice(-6)}</span>
+                <button
+                  onClick={() => deleteOrder(order._id)}
+                  disabled={deleting === order._id}
+                  className="delete-button"
+                  title="Delete order"
+                >
+                  {deleting === order._id ? (
+                    <span className="deleting-spinner"></span>
+                  ) : (
+                    <Trash2 className="delete-icon" />
+                  )}
+                </button>
+              </div>
+
               <div className="order-customer">
                 <h3>{order.name}</h3>
                 <p>{order.email}</p>
@@ -115,9 +200,14 @@ const Orders = () => {
 
               <div className="order-address">
                 <strong>Delivery Address:</strong>
-                {order.address.line1}, {order.address.city} - {order.address.postalCode}
                 <br />
-                {order.address.landmark}
+                {order.address.line1}, {order.address.city} - {order.address.postalCode}
+                {order.address.landmark && (
+                  <>
+                    <br />
+                    Landmark: {order.address.landmark}
+                  </>
+                )}
               </div>
 
               <div className="order-meta">
