@@ -155,6 +155,7 @@ app.use(
       "Content-Type",
       "Authorization",
       "x-auth-token",
+      "token", 
       "admin-token",
     ],
   })
