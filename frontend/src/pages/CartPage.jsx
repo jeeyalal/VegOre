@@ -3,7 +3,7 @@
 
 // import { useCart } from "../context/CartContext";
 // import { Trash, Plus, Minus } from "lucide-react";
-// (Payment gateway removed)
+// import { initiatePayment } from "../utils/payments"; // ⭐ Razorpay Checkout
 // import BackButton from "../components/BackButton";
 // export default function CartPage() {
 //   const { cart, removeFromCart, increaseQty, decreaseQty } = useCart();
@@ -85,7 +85,7 @@
 //             </p>
 
 //             <button
-//               (quick-pay removed)
+//               onClick={() => initiatePayment(total)} // ⭐ Razorpay Checkout
 //               className="bg-green-600 text-white py-3 px-8 rounded-xl mt-3 font-bold 
 //                          hover:bg-green-700 transition shadow-md"
 //             >
@@ -213,12 +213,6 @@ export default function CartPage() {
                          hover:bg-green-700 transition shadow-md"
             >
               Continue to Checkout
-            </button>
-            <button
-              onClick={() => setOpenCheckout(true)}
-              className="ml-3 bg-yellow-500 text-gray-900 py-3 px-6 rounded-xl mt-3 font-bold hover:bg-yellow-600 transition shadow-md"
-            >
-              Pay Now
             </button>
           </div>
         </>

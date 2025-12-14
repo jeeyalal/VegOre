@@ -5,7 +5,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "../../context/SubscriptionContext";
 import { CreditCard, Smartphone, Building2, Check, Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -38,28 +37,116 @@ export default function Payment() {
   // ✔ FIXED HANDLE PAYMENT FUNCTION
   const handlePayment = async () => {
     setProcessing(true);
+
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+    const RZ_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
     const token = localStorage.getItem("token");
 
-    try {
-      const orderId = `VEG${Date.now()}`;
+    // ----------------------------
+    // CASE 1: NO RAZORPAY KEY → SIMULATE PAYMENT SUCCESS
+    // ----------------------------
+    if (!RZ_KEY) {
+      setTimeout(async () => {
+        try {
+          const orderId = `VEG${Date.now()}`;
 
-      const payload = {
-        ...subscription,
-        payment: { provider: selectedMethod, status: "success", orderId },
+          const payload = {
+            ...subscription,
+            payment: { provider: selectedMethod, status: "success", orderId },
+          };
+
+          const headers = { "Content-Type": "application/json" };
+          if (token) headers.token = token;
+
+          await axios.post(`${BACKEND_URL}/api/subscriptions/create`, payload, { headers });
+
+          setSubscription((prev) => ({ ...prev, orderId }));
+          navigate("/subscription/success");
+        } catch (err) {
+          console.error("Subscription create failed", err);
+          alert("Something went wrong while creating subscription.");
+        }
+
+        setProcessing(false);
+      }, 2000);
+
+      return;
+    }
+
+    // ----------------------------
+    // CASE 2: REAL RAZORPAY PAYMENT
+    // ----------------------------
+    try {
+      const orderRes = await axios.post(
+        `${BACKEND_URL}/api/payments/create-order`,
+        { amount: subscription.totalPrice },
+        { headers: { token } }
+      );
+
+      if (!orderRes.data.success) throw new Error("Order creation failed");
+
+      const order = orderRes.data.order;
+
+      // Load Razorpay script
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+
+      const options = {
+        key: RZ_KEY,
+        amount: order.amount,
+        currency: order.currency,
+        name: "VegOre",
+        description: subscription.planName,
+        order_id: order.id,
+
+        handler: async function (response) {
+          try {
+            const verifyRes = await axios.post(
+              `${BACKEND_URL}/api/payments/verify`,
+              {
+                ...response,
+                subscriptionData: subscription,
+              },
+              { headers: { token } }
+            );
+
+            if (!verifyRes.data.success) throw new Error("Verification failed");
+
+            const sub = verifyRes.data.subscription;
+
+            setSubscription((prev) => ({
+              ...prev,
+              orderId: sub._id || sub.orderId,
+            }));
+
+            navigate("/subscription/success");
+          } catch (err) {
+            console.error("Payment verification failed", err);
+            alert("Verification failed. Contact support.");
+          }
+        },
+
+        prefill: {
+          name: subscription.userDetails?.name,
+          email: subscription.userDetails?.email,
+          contact: subscription.userDetails?.phone,
+        },
+
+        theme: { color: "#38A169" },
       };
 
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers.token = token;
-
-      await axios.post(`${BACKEND_URL}/api/subscriptions/create`, payload, { headers });
-
-      setSubscription((prev) => ({ ...prev, orderId }));
-      toast.success("Subscription created successfully");
-      navigate("/subscription/success");
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
-      console.error("Subscription create failed", err);
-      toast.error("Something went wrong while creating subscription.");
+      console.error("Razorpay error:", err);
+      alert("Payment failed. Try again.");
     }
 
     setProcessing(false);

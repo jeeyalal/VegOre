@@ -10,7 +10,6 @@
 
 
 // import orderRouter from "./routes/orderRoutes.js";
-// import subscriptionRouter from "./routes/subscriptionRoutes.js";
 
 
 // dotenv.config();
@@ -80,36 +79,12 @@
 // app.use("/api/food", foodRouter);
 // app.use("/api/user", userRouter);
 // app.use("/api/orders", orderRouter);
-// app.use("/api/subscriptions", subscriptionRouter);
 
 // // =============================================
 // // Root Test Route
 // // =============================================
 // app.get("/", (req, res) => {
 //   res.send("✅ VegOre API is running");
-// });
-
-// // Debug: list of mounted routes (not for production)
-// app.get('/__routes', (req, res) => {
-//   try {
-//     const routes = [];
-//     app._router.stack.forEach((middleware) => {
-//       try {
-//         if (middleware.route) {
-//           routes.push(middleware.route.path);
-//         } else if (middleware.name === 'router' && middleware.handle && Array.isArray(middleware.handle.stack)) {
-//           middleware.handle.stack.forEach((handler) => {
-//             if (handler && handler.route && handler.route.path) routes.push(handler.route.path);
-//           });
-//         }
-//       } catch (err) {
-//         // ignore per-middleware errors
-//       }
-//     });
-//     res.json({ routes });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: 'Failed to list routes' });
-//   }
 // });
 
 // // =============================================
@@ -130,6 +105,9 @@
 // app.listen(port, () => {
 //   console.log(`🚀 Server running on port ${port}`);
 // });
+
+
+
 
 
 
@@ -154,7 +132,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // =============================================
-// CORS
+// ✅ SINGLE, CORRECT CORS CONFIG
 // =============================================
 const allowedOrigins = [
   "http://localhost:5173",
@@ -169,18 +147,24 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(null, true);
+      callback(null, true); // allow for now
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-auth-token",
+      "admin-token",
+    ],
   })
 );
 
-app.options(/.*/, cors());
+// REQUIRED for preflight
+app.options("*", cors());
 
 // =============================================
-// ⭐ REQUIRED BODY MIDDLEWARE (FIX)
+// Middleware
 // =============================================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -222,7 +206,7 @@ app.use((err, req, res, next) => {
 });
 
 // =============================================
-// Start
+// Start Server
 // =============================================
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);

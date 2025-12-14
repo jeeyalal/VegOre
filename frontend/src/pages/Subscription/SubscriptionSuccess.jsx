@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSubscription } from "../../context/SubscriptionContext";
-import axios from "axios";
 import { CheckCircle, Package, Calendar, Mail, Download } from "lucide-react";
 
 export default function SubscriptionSuccess() {
@@ -14,25 +13,6 @@ export default function SubscriptionSuccess() {
     const timer = setTimeout(() => setShowConfetti(false), 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Optionally fetch the subscription details from backend to show saved record
-  useEffect(() => {
-    const fetchFromServer = async () => {
-      try {
-        const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-        if (!subscription.orderId) return;
-        const res = await axios.get(`${BACKEND_URL}/api/subscriptions/${subscription.orderId}`);
-        if (res.data?.success && res.data.data) {
-          // replace subscription details locally if server has data
-          // (This is useful if server created record has updated fields.)
-          // Note: In this demo we won't replace context to avoid side-effects
-        }
-      } catch (err) {
-        // ignore
-      }
-    };
-    fetchFromServer();
-  }, [subscription.orderId]);
 
   const startDate = new Date();
   startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
