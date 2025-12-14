@@ -99,13 +99,12 @@
 // export { addFood, listFood, removeFood };
 
 
-
 import foodModel from "../models/foodModel.js";
-import fs from "fs";
-import path from "path";
-import cloudinary from '../config/cloudinary.js';
+import cloudinary from "../config/cloudinary.js";
 
-// ✅ ADD FOOD
+/* =========================
+   ADD FOOD
+========================= */
 const addFood = async (req, res) => {
   try {
     if (!req.file) {
@@ -115,12 +114,10 @@ const addFood = async (req, res) => {
       });
     }
 
-    // ✅ Upload image to Cloudinary
+    // Upload to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        {
-          folder: "food-items",
-        },
+        { folder: "food-items" },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
@@ -128,12 +125,11 @@ const addFood = async (req, res) => {
       ).end(req.file.buffer);
     });
 
-
     const food = new foodModel({
       id: req.body.id,
       name: req.body.name,
-      img: uploadResult.secure_url, // Use the Cloudinary URL
-      imgPublicId: uploadResult.public_id, // Store the public ID for future reference
+      img: uploadResult.secure_url,
+      imgPublicId: uploadResult.public_id,
       price: req.body.price,
 
       nutrition: {
@@ -143,12 +139,14 @@ const addFood = async (req, res) => {
         fat: req.body.fat,
       },
 
-      ingredients: JSON.parse(req.body.ingredients),
+      ingredients: Array.isArray(req.body.ingredients)
+        ? req.body.ingredients
+        : JSON.parse(req.body.ingredients),
+
       section: req.body.section,
       category: req.body.category,
     });
 
-    console.log("NEW FOOD ITEM:", food);
     await food.save();
 
     res.json({
@@ -156,6 +154,7 @@ const addFood = async (req, res) => {
       message: "✅ Food added successfully",
       food,
     });
+
   } catch (error) {
     console.error("ADD FOOD ERROR:", error);
     res.status(500).json({
@@ -165,20 +164,27 @@ const addFood = async (req, res) => {
   }
 };
 
-// ✅ LIST FOOD
+/* =========================
+   LIST FOOD
+========================= */
 const listFood = async (req, res) => {
   try {
     const foods = await foodModel.find({});
     res.json({ success: true, data: foods });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to fetch food" });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch food",
+    });
   }
 };
 
-// ✅ REMOVE FOOD
+/* =========================
+   DELETE FOOD
+========================= */
 const removeFood = async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = req.body; // MUST be Mongo _id
 
     const food = await foodModel.findById(id);
     if (!food) {
@@ -188,14 +194,8 @@ const removeFood = async (req, res) => {
       });
     }
 
-    // ✅ DELETE IMAGE
-    // const imagePath = path.join("uploads", food.img);
-    // if (fs.existsSync(imagePath)) {
-    //   fs.unlinkSync(imagePath);
-    // }
-
-    if(food.imgPublicId){
-      // Delete image from Cloudinary
+    // Delete image from Cloudinary
+    if (food.imgPublicId) {
       await cloudinary.uploader.destroy(food.imgPublicId);
     }
 
@@ -205,6 +205,7 @@ const removeFood = async (req, res) => {
       success: true,
       message: "✅ Food deleted successfully",
     });
+
   } catch (error) {
     console.error("DELETE FOOD ERROR:", error);
     res.status(500).json({
