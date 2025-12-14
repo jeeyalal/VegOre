@@ -103,18 +103,14 @@
 
 
 
-
-
-
-
 import foodModel from "../models/foodModel.js";
 import cloudinary from "../config/cloudinary.js";
 
+/* =========================
+   ADD FOOD
+========================= */
 export const addFood = async (req, res) => {
   try {
-    // 🔴 LOG FOR DEBUG (IMPORTANT)
-    console.log("FILE:", req.file);
-
     if (!req.file || !req.file.buffer) {
       return res.status(400).json({
         success: false,
@@ -122,17 +118,14 @@ export const addFood = async (req, res) => {
       });
     }
 
-    // ✅ Upload to Cloudinary (SAFE VERSION)
     const uploadResult = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
+      cloudinary.uploader.upload_stream(
         { folder: "food-items" },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
         }
-      );
-
-      stream.end(req.file.buffer);
+      ).end(req.file.buffer);
     });
 
     const food = new foodModel({
@@ -162,13 +155,64 @@ export const addFood = async (req, res) => {
       message: "Food added successfully",
       food,
     });
-
   } catch (error) {
-    console.error("ADD FOOD ERROR 🔥:", error);
-
+    console.error("ADD FOOD ERROR:", error);
     res.status(500).json({
       success: false,
-      message: error.message || "Add food failed",
+      message: "Add food failed",
+    });
+  }
+};
+
+/* =========================
+   LIST FOOD  ✅ IMPORTANT
+========================= */
+export const listFood = async (req, res) => {
+  try {
+    const foods = await foodModel.find({});
+    res.json({
+      success: true,
+      data: foods,
+    });
+  } catch (error) {
+    console.error("LIST FOOD ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch food list",
+    });
+  }
+};
+
+/* =========================
+   REMOVE FOOD
+========================= */
+export const removeFood = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const food = await foodModel.findById(id);
+    if (!food) {
+      return res.status(404).json({
+        success: false,
+        message: "Food not found",
+      });
+    }
+
+    if (food.imgPublicId) {
+      await cloudinary.uploader.destroy(food.imgPublicId);
+    }
+
+    await foodModel.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Food deleted successfully",
+    });
+  } catch (error) {
+    console.error("DELETE FOOD ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Delete failed",
     });
   }
 };
