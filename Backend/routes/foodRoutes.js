@@ -158,37 +158,87 @@
 
 
 
-import express from "express";
-import { addFood, listFood, removeFood } from "../controllers/foodController.js";
-import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
-import { authAdmin } from "../middleware/auth.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
+
+
+
+
+
+
+
+
+
+// import express from "express";
+// import { addFood, listFood, removeFood } from "../controllers/foodController.js";
+// import multer from "multer";
+// import path from "path";
+// import { fileURLToPath } from "url";
+// import { authAdmin } from "../middleware/auth.js";
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+// const foodRouter = express.Router();
+
+// // ✅ MULTER LOCAL STORAGE
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, path.join(__dirname, "../uploads"));
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "_" + file.originalname);
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// // ✅ PUBLIC ROUTE
+// foodRouter.get("/list", listFood);
+
+// // ✅ ADMIN PROTECTED ADD (keep secure)
+// foodRouter.post("/add", authAdmin, upload.single("image"), addFood);
+
+// // ✅ TEMP: UNPROTECTED DELETE (no auth → no more 401)
+// foodRouter.post("/remove", authAdmin, removeFood);
+
+// export default foodRouter;
+
+
+import express from "express";
+import multer from "multer";
+import {
+  addFood,
+  listFood,
+  removeFood,
+} from "../controllers/foodController.js";
+import { authAdmin } from "../middleware/auth.js";
 
 const foodRouter = express.Router();
 
-// ✅ MULTER LOCAL STORAGE
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "_" + file.originalname);
-  },
+// ===============================
+// ✅ MULTER MEMORY STORAGE
+// ===============================
+const upload = multer({
+  storage: multer.memoryStorage(),
 });
 
-const upload = multer({ storage });
-
-// ✅ PUBLIC ROUTE
+// ===============================
+// ROUTES
+// ===============================
 foodRouter.get("/list", listFood);
 
-// ✅ ADMIN PROTECTED ADD (keep secure)
-foodRouter.post("/add", authAdmin, upload.single("image"), addFood);
+foodRouter.post(
+  "/add",
+  authAdmin,
+  upload.single("image"),
+  addFood
+);
 
-// ✅ TEMP: UNPROTECTED DELETE (no auth → no more 401)
-foodRouter.post("/remove", authAdmin, removeFood);
+foodRouter.post(
+  "/remove",
+  authAdmin,
+  removeFood
+);
 
 export default foodRouter;

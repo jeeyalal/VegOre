@@ -81,10 +81,10 @@ const Add = ({ url }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            token: token,
-            "admin-token": token,
-            "x-auth-token": token,
-            "Content-Type": "multipart/form-data",
+            // token: token,
+            // "admin-token": token,
+            // "x-auth-token": token,
+            // "Content-Type": "multipart/form-data",
           },
         }
       );
