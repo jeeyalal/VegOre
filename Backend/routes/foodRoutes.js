@@ -6,7 +6,6 @@ import { authAdmin } from "../middleware/auth.js";
 const router = express.Router();
 
 router.get("/list", listFood);
-
 router.post("/add", authAdmin, upload.single("image"), addFood);
 router.post("/remove", authAdmin, removeFood);
 

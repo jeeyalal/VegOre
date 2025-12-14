@@ -90,6 +90,7 @@ const Add = ({ url }) => {
       // );
 
 
+
       const response = await axios.post(
         `${url}/api/food/add`,
         formData,
@@ -99,6 +100,7 @@ const Add = ({ url }) => {
           },
         }
       );
+
 
 
       if (response.data.success) {

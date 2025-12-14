@@ -109,9 +109,6 @@
 
 
 
-
-
-
 import foodModel from "../models/foodModel.js";
 import cloudinary from "../config/cloudinary.js";
 
@@ -122,6 +119,7 @@ export const addFood = async (req, res) => {
       return res.status(400).json({ message: "Image required" });
     }
 
+    // upload image
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         { folder: "food-items" },
@@ -129,37 +127,45 @@ export const addFood = async (req, res) => {
       ).end(req.file.buffer);
     });
 
+    // ✅ SAFE ingredients parsing
+    let ingredients = req.body.ingredients;
+    if (typeof ingredients === "string") {
+      ingredients = JSON.parse(ingredients);
+    }
+
     const food = await foodModel.create({
       id: Number(req.body.id),
       name: req.body.name,
       img: uploadResult.secure_url,
       imgPublicId: uploadResult.public_id,
       price: Number(req.body.price),
+
       nutrition: {
         calories: Number(req.body.calories),
         protein: req.body.protein,
         carbs: req.body.carbs,
         fat: req.body.fat,
       },
-      ingredients: JSON.parse(req.body.ingredients),
+
+      ingredients,
       section: req.body.section,
       category: req.body.category,
     });
 
     res.json({ success: true, food });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Add failed" });
+    console.error("ADD FOOD ERROR:", err);
+    res.status(500).json({ message: "Add food failed" });
   }
 };
 
-/* ================= LIST FOOD ================= */
+/* ================= LIST ================= */
 export const listFood = async (req, res) => {
   const foods = await foodModel.find();
   res.json({ success: true, data: foods });
 };
 
-/* ================= DELETE FOOD ================= */
+/* ================= DELETE ================= */
 export const removeFood = async (req, res) => {
   try {
     const food = await foodModel.findById(req.body.id);
@@ -172,6 +178,7 @@ export const removeFood = async (req, res) => {
     await food.deleteOne();
     res.json({ success: true });
   } catch (err) {
+    console.error("DELETE FOOD ERROR:", err);
     res.status(500).json({ message: "Delete failed" });
   }
 };
