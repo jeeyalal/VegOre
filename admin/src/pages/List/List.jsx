@@ -1,15 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import "./list.css";
 import axios from "axios";
@@ -19,7 +7,9 @@ const List = ({ url }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ FETCH ALL DISHES
+  // ===============================
+  // FETCH ALL DISHES (PUBLIC)
+  // ===============================
   const fetchList = async () => {
     try {
       setLoading(true);
@@ -39,18 +29,33 @@ const List = ({ url }) => {
     fetchList();
   }, []);
 
-  // ✅ DELETE WITHOUT AUTH (MATCHES YOUR BACKEND)
+  // ===============================
+  // DELETE FOOD (ADMIN ONLY)
+  // ===============================
   const removeFood = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      toast.error("Admin not logged in");
       return;
     }
 
     try {
-      const response = await axios.post(`${url}/api/food/remove`, { id });
+      const response = await axios.post(
+        `${url}/api/food/remove`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data.success) {
         toast.success("✅ Food deleted successfully");
-        fetchList(); // Refresh list
+        fetchList();
       } else {
         toast.error(response.data.message || "❌ Delete failed");
       }
@@ -59,6 +64,8 @@ const List = ({ url }) => {
       toast.error(error.response?.data?.message || "❌ Delete failed");
     }
   };
+
+  const isAdmin = !!localStorage.getItem("adminToken");
 
   return (
     <div className="list-page">
@@ -76,7 +83,7 @@ const List = ({ url }) => {
         <div className="food-grid">
           {list.map((item) => (
             <div className="food-card" key={item._id}>
-              {/* ✅ IMAGE HANDLING (LOCAL + CLOUDINARY) */}
+              {/* IMAGE */}
               <img
                 src={
                   item.img?.startsWith("http")
@@ -109,19 +116,22 @@ const List = ({ url }) => {
 
                 <p className="food-ingredients">
                   <b>Ingredients:</b>{" "}
-                  {item.ingredients?.length > 0
+                  {item.ingredients?.length
                     ? item.ingredients.join(", ")
                     : "Not available"}
                 </p>
 
-                <div className="food-actions">
-                  <button
-                    className="delete-btn"
-                    onClick={() => removeFood(item._id)}
-                  >
-                    Delete
-                  </button>
-                </div>
+                {/* ADMIN ONLY DELETE */}
+                {isAdmin && (
+                  <div className="food-actions">
+                    <button
+                      className="delete-btn"
+                      onClick={() => removeFood(item._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
