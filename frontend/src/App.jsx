@@ -22,6 +22,8 @@ import SignupPage from "./pages/SignupPage";
 import CartPage from "./pages/CartPage";
 import Dashboard from "./pages/Dashboard";
 
+import MyOrders from "./pages/MyOrders";
+
 // support 
 import FAQ from './pages/FAQ';
 import RefundPolicy from './pages/RefundPolicy';
@@ -88,6 +90,10 @@ export default function App() {
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-conditions" element={<TermsConditions />} />
+
+
+
+                <Route path="/my-orders" element={<MyOrders />} />
 
 
 
