@@ -49,99 +49,30 @@
 
 
 
-
-
-
-
-
 import jwt from "jsonwebtoken";
 
-/* =========================
-   Helper: Extract Token
-========================= */
 const getToken = (req) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) return null;
-
-  if (!authHeader.startsWith("Bearer ")) return null;
-
-  return authHeader.split(" ")[1];
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) return null;
+  return header.split(" ")[1];
 };
 
-/* =========================
-   USER AUTH
-========================= */
-export const authUser = (req, res, next) => {
-  try {
-    const token = getToken(req);
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "No token provided",
-      });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
-  }
-};
-
-/* =========================
-   ADMIN AUTH
-========================= */
 export const authAdmin = (req, res, next) => {
   try {
     const token = getToken(req);
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "No token provided",
-      });
+      return res.status(401).json({ message: "No token" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // SUPPORT BOTH role & isAdmin (important)
     if (decoded.role !== "admin" && decoded.isAdmin !== true) {
-      return res.status(403).json({
-        success: false,
-        message: "Admin access only",
-      });
+      return res.status(403).json({ message: "Admin only" });
     }
 
     req.admin = decoded;
     next();
-
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
-
-/* =========================
-   OPTIONAL AUTH
-========================= */
-export const optionalAuth = (req, res, next) => {
-  try {
-    const token = getToken(req);
-    if (!token) return next();
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-
-  } catch (error) {
-    next(); // ignore token errors
-  }
-};
-
