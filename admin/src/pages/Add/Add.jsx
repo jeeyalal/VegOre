@@ -75,33 +75,19 @@ const Add = ({ url }) => {
       }
 
       // ✅ ✅ ✅ SEND TOKEN IN ALL POSSIBLE FORMATS
-      // const response = await axios.post(
-      //   `${url}/api/food/add`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       token: token,
-      //       "admin-token": token,
-      //       "x-auth-token": token,
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
-
-
-
       const response = await axios.post(
         `${url}/api/food/add`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            token: token,
+            "admin-token": token,
+            "x-auth-token": token,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-
-
 
       if (response.data.success) {
         toast.success("✅ Dish added successfully!");
