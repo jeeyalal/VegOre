@@ -1,3 +1,6 @@
+
+
+
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import { Trash2, RefreshCw, AlertCircle } from "lucide-react";
@@ -7,16 +10,31 @@
 //   const [orders, setOrders] = useState([]);
 //   const [loading, setLoading] = useState(false);
 //   const [deleting, setDeleting] = useState(null);
+
 //   const token = localStorage.getItem("adminToken");
-//   const url = import.meta.env.VITE_BACKEND_URL || "https://vegore-backend.onrender.com";
+//   const url =
+//     import.meta.env.VITE_BACKEND_URL ||
+//     "https://vegore-backend.onrender.com";
+
+//   // 🔐 Common auth header
+//   const authHeader = {
+//     Authorization: `Bearer ${token}`,
+//   };
 
 //   const fetchOrders = async () => {
 //     try {
 //       setLoading(true);
-//       const res = await axios.get(`${url}/api/orders/list`, { headers: { token } });
-//       if (res.data.success) setOrders(res.data.data);
+//       const res = await axios.get(`${url}/api/orders/list`, {
+//         headers: authHeader,
+//       });
+
+//       if (res.data.success) {
+//         setOrders(res.data.data);
+//       } else {
+//         alert(res.data.message || "Failed to fetch orders");
+//       }
 //     } catch (err) {
-//       console.error("Fetch orders error", err);
+//       console.error("Fetch orders error:", err.response?.data || err.message);
 //       alert("Failed to fetch orders");
 //     } finally {
 //       setLoading(false);
@@ -24,34 +42,42 @@
 //   };
 
 //   const deleteOrder = async (orderId) => {
-//     // Confirm before deleting
-//     const confirmed = window.confirm("Are you sure you want to delete this order? This action cannot be undone.");
+//     const confirmed = window.confirm(
+//       "Are you sure you want to delete this order? This action cannot be undone."
+//     );
 //     if (!confirmed) return;
 
 //     try {
 //       setDeleting(orderId);
-//       const res = await axios.delete(`${url}/api/orders/${orderId}`, { headers: { token } });
-      
+
+//       const res = await axios.delete(
+//         `${url}/api/orders/${orderId}`,
+//         {
+//           headers: authHeader,
+//         }
+//       );
+
 //       if (res.data.success) {
-//         // Remove order from local state
-//         setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+//         setOrders((prev) =>
+//           prev.filter((order) => order._id !== orderId)
+//         );
 //         alert("Order deleted successfully");
 //       } else {
 //         alert(res.data.message || "Failed to delete order");
 //       }
 //     } catch (err) {
-//       console.error("Delete order error", err);
-//       alert("Failed to delete order. Please try again.");
+//       console.error("Delete order error:", err.response?.data || err.message);
+//       alert(err.response?.data?.message || "Failed to delete order");
 //     } finally {
 //       setDeleting(null);
 //     }
 //   };
 
-//   const handleRefresh = () => {
-//     fetchOrders();
-//   };
-
 //   useEffect(() => {
+//     if (!token) {
+//       alert("Admin not authenticated");
+//       return;
+//     }
 //     fetchOrders();
 //   }, []);
 
@@ -59,13 +85,13 @@
 //     <div className="orders-page">
 //       <div className="orders-header">
 //         <h1 className="orders-title">Orders</h1>
-//         <button 
-//           onClick={handleRefresh} 
+
+//         <button
+//           onClick={fetchOrders}
 //           disabled={loading}
 //           className="refresh-button"
-//           title="Refresh orders"
 //         >
-//           <RefreshCw className={`refresh-icon ${loading ? 'spinning' : ''}`} />
+//           <RefreshCw className={loading ? "spinning" : ""} />
 //           Refresh
 //         </button>
 //       </div>
@@ -77,25 +103,27 @@
 //         </div>
 //       ) : orders.length === 0 ? (
 //         <div className="orders-empty">
-//           <AlertCircle className="empty-icon" />
+//           <AlertCircle />
 //           <p>No orders yet.</p>
 //         </div>
 //       ) : (
 //         <div className="orders-grid">
-//           {orders.map(order => (
+//           {orders.map((order) => (
 //             <div key={order._id} className="order-card">
 //               <div className="order-header-actions">
-//                 <span className="order-id">Order #{order._id.slice(-6)}</span>
+//                 <span className="order-id">
+//                   Order #{order._id.slice(-6)}
+//                 </span>
+
 //                 <button
 //                   onClick={() => deleteOrder(order._id)}
 //                   disabled={deleting === order._id}
 //                   className="delete-button"
-//                   title="Delete order"
 //                 >
 //                   {deleting === order._id ? (
 //                     <span className="deleting-spinner"></span>
 //                   ) : (
-//                     <Trash2 className="delete-icon" />
+//                     <Trash2 />
 //                   )}
 //                 </button>
 //               </div>
@@ -109,7 +137,8 @@
 //               <div className="order-address">
 //                 <strong>Delivery Address:</strong>
 //                 <br />
-//                 {order.address.line1}, {order.address.city} - {order.address.postalCode}
+//                 {order.address.line1}, {order.address.city} -{" "}
+//                 {order.address.postalCode}
 //                 {order.address.landmark && (
 //                   <>
 //                     <br />
@@ -130,10 +159,10 @@
 //                 <ul>
 //                   {order.items.map((it, idx) => (
 //                     <li key={idx}>
-//                       <span className="item-name">
+//                       <span>
 //                         {it.name} × {it.qty}
 //                       </span>
-//                       <span className="item-price">₹{it.price}</span>
+//                       <span>₹{it.price}</span>
 //                     </li>
 //                   ))}
 //                 </ul>
@@ -149,6 +178,26 @@
 // export default Orders;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Trash2, RefreshCw, AlertCircle } from "lucide-react";
@@ -160,20 +209,21 @@ const Orders = () => {
   const [deleting, setDeleting] = useState(null);
 
   const token = localStorage.getItem("adminToken");
+
   const url =
     import.meta.env.VITE_BACKEND_URL ||
     "https://vegore-backend.onrender.com";
 
-  // 🔐 Common auth header
-  const authHeader = {
-    Authorization: `Bearer ${token}`,
-  };
-
+  // ===============================
+  // FETCH ORDERS (ADMIN)
+  // ===============================
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${url}/api/orders/list`, {
-        headers: authHeader,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.data.success) {
@@ -189,19 +239,30 @@ const Orders = () => {
     }
   };
 
+  // ===============================
+  // DELETE ORDER (OPTION 1 – POST)
+  // ===============================
   const deleteOrder = async (orderId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this order? This action cannot be undone."
     );
     if (!confirmed) return;
 
+    if (!token) {
+      alert("Admin not authenticated");
+      return;
+    }
+
     try {
       setDeleting(orderId);
 
-      const res = await axios.delete(
-        `${url}/api/orders/${orderId}`,
+      const res = await axios.post(
+        `${url}/api/orders/remove`,
+        { id: orderId },
         {
-          headers: authHeader,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
