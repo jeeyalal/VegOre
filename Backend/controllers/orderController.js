@@ -189,12 +189,8 @@ export const listOrders = async (req, res) => {
 // ===============================
 export const getOrdersForUser = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token)
-      return res.status(401).json({ success: false, message: "Not authorized" });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const orders = await OrderModel.find({ user: decoded.id }).sort({ createdAt: -1 });
+    const orders = await OrderModel.find({ user: req.user.id })
+      .sort({ createdAt: -1 });
 
     res.json({ success: true, data: orders });
   } catch (err) {
@@ -202,6 +198,7 @@ export const getOrdersForUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch user orders" });
   }
 };
+
 
 // ===============================
 // ✅ REMOVE ORDER (ADMIN)
