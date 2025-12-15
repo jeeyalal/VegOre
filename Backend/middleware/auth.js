@@ -48,6 +48,143 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import jwt from "jsonwebtoken";
+
+// // ===============================
+// // USER AUTH
+// // ===============================
+// export const authUser = (req, res, next) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Not Authorized",
+//       });
+//     }
+
+//     const token = authHeader.split(" ")[1];
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     return res.status(401).json({
+//       success: false,
+//       message: "Invalid token",
+//     });
+//   }
+// };
+
+// // ===============================
+// // ADMIN AUTH
+// // ===============================
+// export const authAdmin = (req, res, next) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Not Authorized",
+//       });
+//     }
+
+//     const token = authHeader.split(" ")[1];
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     if (decoded.role !== "admin") {
+//       return res.status(403).json({
+//         success: false,
+//         message: "Admin access only",
+//       });
+//     }
+
+//     req.admin = decoded;
+//     next();
+//   } catch (error) {
+//     return res.status(401).json({
+//       success: false,
+//       message: "Invalid token",
+//     });
+//   }
+// };
+
+// // ===============================
+// // OPTIONAL AUTH (SAFE)
+// // ===============================
+// export const optionalAuth = (req, res, next) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) return next();
+
+//     const token = authHeader.split(" ")[1];
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     next();
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import jwt from "jsonwebtoken";
 
 // ===============================
@@ -67,7 +204,7 @@ export const authUser = (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+    req.user = decoded; // { id, role }
     next();
   } catch (error) {
     return res.status(401).json({
