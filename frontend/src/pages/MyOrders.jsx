@@ -17,7 +17,7 @@ const MyOrders = () => {
       }
 
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/orders/user`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/orders/user`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -25,10 +25,13 @@ const MyOrders = () => {
         }
       );
 
-      if (res.data.success) {
-        setOrders(res.data.data);
+      if (res.data?.success) {
+        setOrders(res.data.data || []);
+      } else {
+        setOrders([]);
       }
     } catch (err) {
+      console.error("MY ORDERS ERROR:", err);
       setError(err.response?.data?.message || "Failed to load orders");
     } finally {
       setLoading(false);
@@ -39,8 +42,13 @@ const MyOrders = () => {
     fetchOrders();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading orders...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+  if (loading) {
+    return <p className="text-center mt-10">Loading orders...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center mt-10 text-red-500">{error}</p>;
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -65,11 +73,14 @@ const MyOrders = () => {
               </div>
 
               <p className="text-sm text-gray-600">
-                Placed on: {new Date(order.createdAt).toLocaleDateString()}
+                Placed on:{" "}
+                {order.createdAt
+                  ? new Date(order.createdAt).toLocaleDateString()
+                  : "N/A"}
               </p>
 
               <div className="mt-3">
-                {order.items.map((item, i) => (
+                {order.items?.map((item, i) => (
                   <div
                     key={i}
                     className="flex justify-between text-sm py-1"
