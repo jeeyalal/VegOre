@@ -54,36 +54,26 @@
 
 
 
-
-
-
-
-
-// Backend/routes/orderRoutes.js
 import express from "express";
 import {
   createOrder,
   listOrders,
   getOrdersForUser,
-  removeOrder, // ✅ ADD
+  removeOrder,
 } from "../controllers/orderController.js";
 
-import { authAdmin } from "../middleware/auth.js";
-
-
-import { authUser } from "../middleware/auth.js";
+import { authAdmin, authUser } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Create order (public / user)
-router.post("/create", authUser, createOrder);   // 🔐 REQUIRED
-router.get("/user", authUser, getOrdersForUser); 
-// Admin: list all orders
+// ✅ CREATE ORDER (PUBLIC – OLD BEHAVIOR)
+router.post("/create", createOrder);
+
+// ✅ USER ORDERS (LOGIN REQUIRED)
+router.get("/user", authUser, getOrdersForUser);
+
+// ✅ ADMIN
 router.get("/list", authAdmin, listOrders);
-
-// User: get own orders
-
-// ✅ Admin: delete order
 router.post("/remove", authAdmin, removeOrder);
 
 export default router;
