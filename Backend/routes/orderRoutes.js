@@ -54,6 +54,34 @@
 
 
 
+// import express from "express";
+// import {
+//   createOrder,
+//   listOrders,
+//   getOrdersForUser,
+//   removeOrder,
+// } from "../controllers/orderController.js";
+
+// import { authAdmin, authUser } from "../middleware/auth.js";
+
+// const router = express.Router();
+
+// // ✅ CREATE ORDER (PUBLIC – OLD BEHAVIOR)
+// router.post("/create", createOrder);
+
+// // ✅ USER ORDERS (LOGIN REQUIRED)
+// router.get("/user", authUser, getOrdersForUser);
+
+// // ✅ ADMIN
+// router.get("/list", authAdmin, listOrders);
+// router.post("/remove", authAdmin, removeOrder);
+
+// export default router;
+
+
+
+
+
 import express from "express";
 import {
   createOrder,
@@ -66,13 +94,13 @@ import { authAdmin, authUser } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// ✅ CREATE ORDER (PUBLIC – OLD BEHAVIOR)
+// CREATE ORDER (PUBLIC – guest + user)
 router.post("/create", createOrder);
 
-// ✅ USER ORDERS (LOGIN REQUIRED)
+// USER ORDERS (LOGIN REQUIRED)
 router.get("/user", authUser, getOrdersForUser);
 
-// ✅ ADMIN
+// ADMIN
 router.get("/list", authAdmin, listOrders);
 router.post("/remove", authAdmin, removeOrder);
 
